@@ -44,6 +44,8 @@ This document outlines the system architecture for the farmer's assistant applic
   - Acts as a security and routing gateway
   - Can be upgraded to a **load balancer** if scaling is needed
 
+  <img src="./images/1-architechture-and-flow.png" width="500" />
+
 ## Tech Stack
 
 - Python
