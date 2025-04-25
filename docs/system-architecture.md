@@ -30,7 +30,7 @@ This document outlines the system architecture for the farmer's assistant applic
 - Each major component (NGINX, FastAPI, Streamlit, Airflow) runs in its own isolated Docker container.
 - All containers are managed using Docker Compose, and share a network that allows them to communicate internally
 - NGINX uses this internal network to route requests to the appropriate container (e.g., `/api/ → FastAPI`, `/ → Streamlit`)
-- DuckDB is accessed by both services via a shared volume, allowing consistent read/write access across containers.
+- DuckDB is accessed by both services (FastAPI and Airflow) via a shared volume, allowing consistent read/write access across containers.
 
 ## Cloud Infrastructure
 
