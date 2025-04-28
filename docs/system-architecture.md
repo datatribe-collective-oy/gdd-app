@@ -6,9 +6,10 @@ This document outlines the system architecture for the farmer's assistant applic
 | Component        | Role                                                                 |
 |------------------|----------------------------------------------------------------------|
 | FastAPI          | Backend API to serve weather and GDD data                            |
-| Streamlit        | Frontend dashboard for farmers to visualize GDD          |
+| Streamlit        | Frontend dashboard for farmers to visualize GDD                      |
 | Airflow          | Orchestration tool to schedule and run data ingestion pipelines      |
-| DuckDB           | Lightweight embedded database to store and query weather data        |
+| DuckDB           | Lightweight embedded database to store and query gdd data            |
+| S3 (AWS)         | Cloud storage to store and query exctracted raw weather data         |
 | NGINX            | Reverse proxy to route traffic between frontend and backend          |
 | Docker           | Containerization for modular, isolated components                    |
 | EC2 (AWS)        | Cloud VM hosting the full application stack                          |
@@ -22,8 +23,8 @@ This document outlines the system architecture for the farmer's assistant applic
 - [Terms of Service of API usage](https://developer.yr.no/doc/TermsOfService/)
 - Follows guidelines: authenticated headers, proxy-ready logic
 - Traffic to Yr.no is **not triggered by user activity**, but instead scheduled via **Airflow DAGs**.
-- Weather data is **fetched periodically**, parsed, and **stored in DuckDB**.
-- Weather data is used to calculate GDD to estimate plant growth.
+- Weather data is **fetched periodically** and raw data **stored in S3**, to be processed further.
+- Weather data is used to calculate GDD to estimate plant growth, and calculations are stored in DuckDB.
 
 ## Docker Architecture
 
@@ -38,7 +39,7 @@ This document outlines the system architecture for the farmer's assistant applic
 - Uses **Terraform** to provision:
   - EC2 instance
   - Security groups
-  - S3 (if needed, under consideration)
+  - S3
 - All internet-facing traffic is routed through **NGINX**, which:
   - Hides internal ports
   - Acts as a security and routing gateway
@@ -57,6 +58,7 @@ This document outlines the system architecture for the farmer's assistant applic
 - NGINX
 - Docker & Docker Compose
 - AWS EC2
+- AWS S3
 - Terraform
 
 ## Notes
