@@ -1,5 +1,11 @@
 .PHONY: build-fastapi build-streamlit up down test-unit test-integration fmt lint install
 
+api:
+	poetry run python scripts/api.py
+
+nodemon: # Imitates behavior of nodemon@node.js
+	poetry run uvicorn /scripts.api:app --reload
+
 build-fastapi:
 	docker build -f Dockerfile.fastapi -t gdd-fastapi .
 
@@ -18,14 +24,17 @@ test-unit:
 test-integration:
 	poetry run pytest tests/integration
 
+lint:
+	poetry run ruff check scripts tests
+
 fmt:
+	poetry run ruff format scripts tests
+
+black:
 	poetry run black scripts tests
 
-lint:
-	poetry run flake8 scripts tests
-
 install:
-	poetry install
+	poetry install --no-root
 
 terraform-plan:
 	cd terraform && terraform init && terraform plan
