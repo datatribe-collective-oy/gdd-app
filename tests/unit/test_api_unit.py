@@ -4,7 +4,7 @@ from scripts.api import app
 client = TestClient(app)
 
 def test_read_root():
-    response = client.get("/")
+    response = client.get("/api/")
     assert response.status_code == 200
     assert response.json() == "Hello World"
 
