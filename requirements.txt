@@ -1,0 +1,11 @@
+fastapi
+numpy
+pandas
+matplotlib
+streamlit
+requests
+uvicorn
+pydantic
+ruff
+black
+pytest
