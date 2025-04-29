@@ -4,7 +4,7 @@ api:
 	poetry run python scripts/api.py
 
 nodemon: # Imitates behavior of nodemon@node.js
-	poet"ry run uvicorn scripts.api:app --reload
+	poetry run uvicorn scripts.api:app --reload
 
 build-fastapi:
 	docker build -f Dockerfile.fastapi -t gdd-fastapi .
