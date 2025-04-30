@@ -17,6 +17,46 @@ This document outlines the system architecture for the farmer's assistant applic
 
 ## Data Flow
 
+            ┌──────────────┐
+            │  Yr.no API   │
+            └──────────────┘
+                   ▼
+            ┌──────────────┐
+            │   ETL DAGs   │
+            └──────────────┘
+                   ▼
+            ┌──────────────┐
+            │   S3 Bucket  │
+            │   (Bronze)   │
+            └──────────────┘
+                   ▼
+            ┌──────────────┐
+            │   ETL DAGs   │
+            └──────────────┘
+                   ▼
+            ┌──────────────┐
+            │   S3 Bucket  │
+            │   (Silver)   │
+            └──────────────┘
+                   ▼
+            ┌──────────────┐
+            │   ETL DAGs   │
+            └──────────────┘
+                   ▼
+            ┌──────────────┐
+            │   DuckDB     │
+            │   (Gold)     │
+            └──────────────┘
+                   ▼
+            ┌──────────────┐
+            │   FastAPI    │
+            └──────────────┘
+                   ▼
+            ┌──────────────┐
+            │   Client     │
+            └──────────────┘
+
+
 ## API Usage (Yr.no)
 
 - [Yr.no](https://developer.yr.no/) for developers.
