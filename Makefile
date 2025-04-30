@@ -31,7 +31,7 @@ fmt:
 	poetry run ruff format scripts tests
 
 black:
-	poetry run black scripts tests
+	poetry run black .
 
 install:
 	poetry install --no-root
