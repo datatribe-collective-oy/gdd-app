@@ -6,9 +6,9 @@ from tests.utils.http_status import (
     assert_status_forbidden,
     assert_status_not_found,
     assert_status_unprocessable,
-    assert_status_server_error
-    
+    assert_status_server_error,
 )
+
 
 def assert_response_for_case(response, case, expected_body=None):
     match case:
@@ -30,7 +30,9 @@ def assert_response_for_case(response, case, expected_body=None):
             assert_status_server_error(response)
         case _:
             raise ValueError(f"Oops, sorry! Unknown case: {case}")
-    
+
     # Checking expected JSON body if it's given
     if expected_body is not None:
-        assert response.json() == expected_body, f"Expected body {expected_body}, got {response.json()}"
+        assert (
+            response.json() == expected_body
+        ), f"Expected body {expected_body}, got {response.json()}"

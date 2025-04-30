@@ -32,7 +32,7 @@ def bad_request_response():
 @router.get("/api/gdd/unprocessable/")
 @router.get("/api/weather/unprocessable/")
 def unprocessable_response():
-    raise HTTPException(status_code=422, detail="Invalid data")
+    raise HTTPException(status_code=422, detail="Invalid data.")
 
 
 # 500 Internal Server Error
@@ -40,4 +40,4 @@ def unprocessable_response():
 @router.get("/api/gdd/server_error/")
 @router.get("/api/weather/server_error/")
 def server_error_response():
-    raise HTTPException(status_code=500, detail="Server broke down")
+    raise HTTPException(status_code=500, detail="Server broke down.")
