@@ -8,7 +8,7 @@ router = APIRouter()
 @router.get("/api/unauthorized")
 @router.get("/api/gdd/unauthorized")
 @router.get("/api/weather/unauthorized")
-def fake_unauthorized():
+def unauthorized_response():
     raise HTTPException(status_code=401, detail="You must log in.")
 
 # ----------------------------
@@ -17,7 +17,7 @@ def fake_unauthorized():
 @router.get("/api/forbidden")
 @router.get("/api/gdd/forbidden")
 @router.get("/api/weather/forbidden")
-def fake_forbidden():
+def forbidden_response():
     raise HTTPException(status_code=403, detail="Access denied.")
 
 # ----------------------------
@@ -26,7 +26,7 @@ def fake_forbidden():
 @router.get("/api/bad_request")
 @router.get("/api/gdd/bad_request")
 @router.get("/api/weather/bad_request")
-def fake_bad_request():
+def bad_request_response():
     raise HTTPException(status_code=400, detail="Bad format.")
 
 # ----------------------------
@@ -35,7 +35,7 @@ def fake_bad_request():
 @router.get("/api/unprocessable")
 @router.get("/api/gdd/unprocessable")
 @router.get("/api/weather/unprocessable")
-def fake_unprocessable():
+def unprocessable_response():
     raise HTTPException(status_code=422, detail="Invalid data")
 
 # ----------------------------
@@ -44,6 +44,6 @@ def fake_unprocessable():
 @router.get("/api/server_error")
 @router.get("/api/gdd/server_error")
 @router.get("/api/weather/server_error")
-def fake_server_error():
+def server_error_response():
     raise HTTPException(status_code=500, detail="Server broke down")
 # ----------------------------
