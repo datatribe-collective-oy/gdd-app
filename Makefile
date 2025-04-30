@@ -1,7 +1,7 @@
 .PHONY: build-fastapi build-streamlit up down test-unit test-integration fmt lint install
 
 api:
-	poetry run python scripts/api.py
+	poetry run python -m scripts.api
 
 nodemon: # Imitates behavior of nodemon@node.js
 	poetry run uvicorn scripts.api:app --reload
@@ -41,3 +41,6 @@ terraform-plan:
 
 terraform-apply:
 	cd terraform && terraform apply
+
+venv:
+	poetry env activate
