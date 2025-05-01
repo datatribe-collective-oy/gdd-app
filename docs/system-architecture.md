@@ -27,16 +27,7 @@ This document outlines the system architecture for the farmer's assistant applic
                    ▼
             ┌──────────────┐
             │   S3 Bucket  │
-            │   (Bronze)   │
-            └──────────────┘
-                   ▼
-            ┌──────────────┐
-            │   ETL DAGs   │
-            └──────────────┘
-                   ▼
-            ┌──────────────┐
-            │   S3 Bucket  │
-            │   (Silver)   │
+            │ Layer:Bronze │
             └──────────────┘
                    ▼
             ┌──────────────┐
@@ -45,7 +36,16 @@ This document outlines the system architecture for the farmer's assistant applic
                    ▼
             ┌──────────────┐
             │   DuckDB     │
-            │   (Gold)     │
+            │ Schema:Silver│
+            └──────────────┘
+                   ▼
+            ┌──────────────┐
+            │   ETL DAGs   │
+            └──────────────┘
+                   ▼
+            ┌──────────────┐
+            │   DuckDB     │
+            │ Schema:Gold  │
             └──────────────┘
                    ▼
             ┌──────────────┐
