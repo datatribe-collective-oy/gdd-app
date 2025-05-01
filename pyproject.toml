@@ -3,7 +3,7 @@ name = "gdd-app"
 version = "0.1.0"
 description = "GDD plant growth tracking application"
 authors = [
-    {name = "Eveliina Hampis",email = "eveliinahampus@gmail.com"}
+    {name = "Eveliina Hampus",email = "eveliinahampus@gmail.com"}
 ]
 license = {text = "MIT"}
 readme = "README.md"
@@ -15,7 +15,8 @@ dependencies = [
     "matplotlib (>=3.10.1,<4.0.0)",
     "httpx (>=0.28.1,<0.29.0)",
     "starlette (>=0.46.2,<0.47.0)",
-    "black[jupyter] (>=25.1.0,<26.0.0)"
+    "black[jupyter] (>=25.1.0,<26.0.0)",
+    "ruff (>=0.11.7,<0.12.0)"
 ]
 
 

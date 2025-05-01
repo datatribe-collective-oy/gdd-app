@@ -6,10 +6,10 @@ api:
 nodemon: # Imitates behavior of nodemon@node.js
 	poetry run uvicorn scripts.api:app --reload
 
-build-fastapi:
+fastapi-b:
 	docker build -f Dockerfile.fastapi -t gdd-fastapi .
 
-build-streamlit:
+streamlit-b:
 	docker build -f Dockerfile.streamlit -t gdd-streamlit .
 
 up:
@@ -27,19 +27,16 @@ test-integration:
 lint:
 	poetry run ruff check scripts tests
 
-fmt:
-	poetry run ruff format scripts tests
-
 black:
 	poetry run black .
 
 install:
 	poetry install --no-root
 
-terraform-plan:
+terra-plan:
 	cd terraform && terraform init && terraform plan
 
-terraform-apply:
+terra-apply:
 	cd terraform && terraform apply
 
 venv:

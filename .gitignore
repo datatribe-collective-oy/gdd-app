@@ -1,9 +1,25 @@
-.env
-.vscode
-.vscode
-.idea
-.pytest_cache
+# Editor/OS noise 
+*.DS_Store
+*.swp
+*.swo
+.idea/
+.vscode/
 
+# Environment files
+.env
 .venv
+
+# Python cache files
+.pytest_cache
 __pycache__
 */**/__pycache__
+
+# Terraform state and crash logs (inside ./terraform/)
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup
+terraform/crash.log
+terraform/*.tfplan
+terraform/*.tfvars
+terraform/.terraform/
+
+
