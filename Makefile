@@ -48,7 +48,7 @@ terra-plan: # preview terraform changes
 	cd terraform && terraform init && terraform plan
 
 terra-apply: # apply terraform changes
-	cd terraform && terraform apply
+	cd terraform && terraform apply -var-file=dev.tfvars
 
 terra-apply-tfvars: # ! apply terraform changes with tfvars
 	cd terraform && terraform init && terraform apply -var-file=dev.tfvars
