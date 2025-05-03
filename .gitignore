@@ -22,4 +22,3 @@ terraform/*.tfplan
 terraform/*.tfvars
 terraform/.terraform/
 
-
