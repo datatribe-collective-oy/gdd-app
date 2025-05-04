@@ -12,5 +12,5 @@ variable "instance_name" {
 variable "ec2_instance_type" {
   description = ""
   type        = string
-  default     = "t2.micro"
+  default     = "t3.micro"
 }
