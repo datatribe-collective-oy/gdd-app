@@ -22,3 +22,5 @@ terraform/*.tfplan
 terraform/*.tfvars
 terraform/.terraform/
 
+# For dev temporary ignore
+/terraform/user_data/ec2-nginx.sh
