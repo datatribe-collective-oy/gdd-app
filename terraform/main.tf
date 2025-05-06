@@ -3,22 +3,65 @@ provider "aws" {
   region  = "eu-north-1"
 }
 
-# Layer 1: Public Network Access
+
+# Layer 1: Network (VPC, Subnet, Security Group)
+
+
+resource "aws_vpc" "gdd_vpc" {
+  cidr_block = "10.0.0.0/16"
+
+  tags = {
+    Name    = "gdd-vpc"
+    Project = "GDD-Timing-System"
+  }
+}
+
+resource "aws_subnet" "gdd_public_subnet" {
+  vpc_id                  = aws_vpc.gdd_vpc.id
+  cidr_block              = "10.0.1.0/24"
+  availability_zone       = "eu-north-1a"
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name    = "gdd-public-subnet"
+    Project = "GDD-Timing-System"
+  }
+}
+
+resource "aws_internet_gateway" "gdd_igw" {
+  vpc_id = aws_vpc.gdd_vpc.id
+}
+
+resource "aws_route_table" "gdd_route_table" {
+  vpc_id = aws_vpc.gdd_vpc.id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.gdd_igw.id
+  }
+}
+
+resource "aws_route_table_association" "gdd_rta" {
+  subnet_id      = aws_subnet.gdd_public_subnet.id
+  route_table_id = aws_route_table.gdd_route_table.id
+}
+
 resource "aws_security_group" "gdd_sg" {
   name_prefix = "gdd-sg-"
+  vpc_id      = aws_vpc.gdd_vpc.id
 
   ingress {
-    from_port   = 443 # HTTPS
+    from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 22 # SSH
+    from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = var.ssh_allowed_ips # allowed IPs defined
+    cidr_blocks = var.ssh_allowed_ips
   }
 
   egress {
@@ -33,13 +76,22 @@ resource "aws_security_group" "gdd_sg" {
   }
 }
 
-# Layer 2 & 3: Application & ETL
+
+# Layer 2: Compute (EC2 Instance)
+
+
 resource "aws_instance" "gdd_server" {
-  ami           = "ami-0dd574ef87b79ac6c" # amazon linux 2023
-  instance_type = "t3.micro"
+  ami                    = "ami-0dd574ef87b79ac6c"
+  instance_type          = "t3.micro"
+  subnet_id              = aws_subnet.gdd_public_subnet.id
+  security_groups        = [aws_security_group.gdd_sg.id]
+
+  associate_public_ip_address = true
+
+  iam_instance_profile = var.iam_instance_profile_name
+
 
   user_data = file("${path.module}/user_data/ec2-docker.sh")
-
 
   tags = {
     Name    = "gdd-server"
@@ -48,10 +100,12 @@ resource "aws_instance" "gdd_server" {
 }
 
 
-# Layer 4: Data Storage 
+# Layer 4: Data Storage (S3)
+
+
 resource "aws_s3_bucket" "gdd_raw_data" {
   bucket        = "gdd-raw-weather-data"
-  force_destroy = true # for dev only
+  force_destroy = true # dev only 
 
   tags = {
     Project = "GDD-Timing-System"
@@ -67,7 +121,10 @@ resource "aws_s3_bucket_public_access_block" "gdd_raw_data_block" {
   restrict_public_buckets = true
 }
 
-# Prints IP and DNS values on CLI when applying terraform apply or terraform output.
+
+# Outputs
+
+
 output "gdd_server_public_ip" {
   value = aws_instance.gdd_server.public_ip
 }
