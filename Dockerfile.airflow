@@ -12,14 +12,11 @@ USER airflow
 COPY . /opt/airflow/
 WORKDIR /opt/airflow
 
-# Copy your requirements.txt
-COPY requirements.txt /opt/airflow/
+# Copy the init script
+COPY init-airflow.sh /init-airflow.sh
 
 # Install dependencies
 RUN pip install .
-
-# Copy the init script
-COPY init-airflow.sh /init-airflow.sh
 
 ENV AIRFLOW_HOME=/opt/airflow
 
