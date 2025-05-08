@@ -24,20 +24,24 @@ with DAG(
     tags=["bronze", "weather", "GDD"],
 ) as dag:
 
-    # LOGICAL ERROR
-    # Choose which crop to run for
-    crop = "sorghum"
-    locations = SORGHUM_KENYA_LOCATIONS if crop == "sorghum" else MAIZE_INDIA_LOCATIONS
-    bucket = "gdd-raw-weather-data" 
+    crops_locations = {
+    "maize": MAIZE_INDIA_LOCATIONS,
+    "sorghum": SORGHUM_KENYA_LOCATIONS
+}
 
-    def fetch_validate_save(location, lat, lon, crop):
-        df = fetch_weather_data(lat, lon, location, crop)
-        df = validate_weather_data(df)
-        save_partitioned_parquet_s3(df, bucket=bucket)
+bucket = "gdd-raw-weather-data"
 
+def fetch_validate_save(location, lat, lon, crop):
+    df = fetch_weather_data(lat, lon, location, crop)
+    df = validate_weather_data(df)
+    save_partitioned_parquet_s3(df, bucket=bucket)
+
+for crop, locations in crops_locations.items():
     for location, (lat, lon) in locations.items():
         task = PythonOperator(
-            task_id=f"fetch_validate_save_{location}",
+            task_id=f"fetch_validate_save_{crop}_{location}",
             python_callable=fetch_validate_save,
             op_args=[location, lat, lon, crop],
         )
+
+
