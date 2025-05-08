@@ -8,17 +8,15 @@ RUN apt-get update && \
 
 USER airflow
 
-# Copy DAGs
-COPY dags/ /opt/airflow/dags/
-
-# Copy your package (data_fetcher)
-COPY data_fetcher/ /opt/airflow/data_fetcher/
+# Copy all project files
+COPY . /opt/airflow/
+WORKDIR /opt/airflow
 
 # Copy your requirements.txt
 COPY requirements.txt /opt/airflow/
 
 # Install dependencies
-RUN pip install --no-cache-dir -r /opt/airflow/requirements.txt
+RUN pip install .
 
 # Copy the init script
 COPY init-airflow.sh /init-airflow.sh

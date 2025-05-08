@@ -1,6 +1,6 @@
 #!/bin/bash
 
-airflow db upgrade
+airflow db migrate
 
 if ! airflow users list | grep -q "${AIRFLOW_ADMIN_USER}"; then
     airflow users create \

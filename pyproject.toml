@@ -32,3 +32,5 @@ build-backend = "poetry.core.masonry.api"
 pytest = "^8.3.5"
 pytest-mock = "^3.14.0"
 
+[tool.poetry]
+packages = [{include = "data_fetcher"}] 
