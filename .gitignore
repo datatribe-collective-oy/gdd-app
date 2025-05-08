@@ -5,14 +5,14 @@
 .idea/
 .vscode/
 
-# Environment files
+# Environment files and other sensitive data, to prevent accidental commits
 .env
 .venv
+*.pem
+*.key
+gdd_key
+gdd_key.*
 
-# Python cache files
-.pytest_cache
-__pycache__
-*/**/__pycache__
 
 # Terraform state and crash logs (inside ./terraform/)
 terraform/terraform.tfstate
@@ -23,5 +23,33 @@ terraform/*.tfvars
 terraform/.terraform/
 
 # For dev temporary ignore
-/terraform/user_data/ec2-nginx.sh
 env-dev.sh
+
+# Airflow runtime files
+dags/airflow.db
+dags/airflow-webserver.pid
+dags/logs/
+
+# Python cache in any folder
+**/.pytest_cache
+**/__pycache__/
+
+# Jupyter notebook checkpoints
+notebooks/.ipynb_checkpoints/
+
+
+#  Docker / Docker Compose 
+*.log
+docker-compose.override.yml
+.env.docker
+.dockerignore
+.docker/
+docker-data/
+
+
+# Build and distribution files 
+build/
+dist/
+*.egg-info/
+
+.ruff_cache/

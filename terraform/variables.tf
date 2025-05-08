@@ -3,6 +3,7 @@ variable "ssh_allowed_ips" {
   type        = list(string)
 }
 
+
 variable "instance_name" {
   description = "Value for the Name tag applied to the EC2 instance."
   type        = string
@@ -20,3 +21,5 @@ variable "iam_instance_profile_name" {
   type        = string
   default     = "Airflow-instance-profile"
 }
+
+

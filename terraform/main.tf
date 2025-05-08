@@ -10,6 +10,9 @@ provider "aws" {
 resource "aws_vpc" "gdd_vpc" {
   cidr_block = "10.0.0.0/16"
 
+  enable_dns_support = true
+  enable_dns_hostnames = true
+
   tags = {
     Name    = "gdd-vpc"
     Project = "GDD-Timing-System"
@@ -57,12 +60,6 @@ resource "aws_security_group" "gdd_sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port   = 22
-    to_port     = 22
-    protocol    = "tcp"
-    cidr_blocks = var.ssh_allowed_ips
-  }
 
   egress {
     from_port   = 0
@@ -77,6 +74,7 @@ resource "aws_security_group" "gdd_sg" {
 }
 
 
+
 # Layer 2: Compute (EC2 Instance)
 
 
@@ -86,12 +84,13 @@ resource "aws_instance" "gdd_server" {
   subnet_id              = aws_subnet.gdd_public_subnet.id
   security_groups        = [aws_security_group.gdd_sg.id]
 
+
   associate_public_ip_address = true
 
   iam_instance_profile = var.iam_instance_profile_name
 
 
-  user_data = file("${path.module}/user_data/ec2-docker.sh")
+  user_data = file("${path.module}/user_data/ec2-setup.sh")
 
   tags = {
     Name    = "gdd-server"

@@ -11,10 +11,10 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy the API
-COPY scripts/api.py .
+COPY scripts/ /app/scripts/
 
 # Expose port (FastAPI default for uvicorn)
 EXPOSE 8000
 
 # Run FastAPI API with uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "scripts.api:app", "--host", "0.0.0.0", "--port", "8000"]

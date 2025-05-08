@@ -1,0 +1,28 @@
+server {
+    listen 443 ssl;
+    server_name _;
+
+    ssl_certificate /etc/ssl/certs/gdd_selfsigned.crt;
+    ssl_certificate_key /etc/ssl/private/gdd_selfsigned.key;
+
+    location / {
+        proxy_pass http://streamlit:8501/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    location /api/ {
+        proxy_pass http://fastapi:8000/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+
+    location /airflow/ {
+        allow ${NGINX_ALLOWED_ADMIN_IP_1};
+        allow ${NGINX_ALLOWED_ADMIN_IP_2};
+        deny all;
+        proxy_pass http://airflow-webserver:8080/;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+    }
+}
