@@ -1,4 +1,4 @@
-.PHONY: fastapi-b streamlit-b up down unit-t integration-t black ruff install ruff-check venv nodemon terra-plan terra-apply terra-apply-tfvars terra-destroy terra-list terra-fmt terra-valid
+.PHONY: fastapi-b streamlit-b up down unit-t integration-t black ruff install ruff-check venv nodemon terra-plan terra-apply terra-apply-tfvars terra-destroy terra-list terra-fmt terra-valid dev
 
 # Application dev
 
@@ -64,3 +64,7 @@ terra-fmt: # format terraform code
 
 terra-valid: # validate terraform code
 	cd terraform && terraform validate
+
+dev:
+	bash env-dev.sh
+
