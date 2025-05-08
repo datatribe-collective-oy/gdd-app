@@ -22,8 +22,6 @@ terraform/*.tfplan
 terraform/*.tfvars
 terraform/.terraform/
 
-# For dev temporary ignore
-env-dev.sh
 
 # Airflow runtime files
 dags/airflow.db
