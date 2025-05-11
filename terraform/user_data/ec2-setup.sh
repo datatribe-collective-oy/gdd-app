@@ -1,41 +1,48 @@
 #!/bin/bash
+set -euo pipefail
+
+log() {
+  echo -e "\033[1;34m[INFO]\033[0m $1"
+}
+
+fail() {
+  echo -e "\033[1;31m[ERROR]\033[0m $1"
+  exit 1
+}
 
 # --- PART 1: DOCKER + COMPOSE INSTALL --- #
+log "Refreshing package cache..."
+dnf makecache -y || fail "dnf makecache failed"
 
-# Refresh package cache
-dnf makecache -y
+log "Installing Docker..."
+dnf install -y docker || fail "Docker installation failed"
 
-# Install Docker
-dnf install -y docker
-systemctl enable docker
-systemctl start docker
+log "Enabling and starting Docker..."
+systemctl enable docker || fail "Failed to enable Docker"
+systemctl start docker || fail "Failed to start Docker"
 
-# Add ec2-user to docker group (non-root access)
-usermod -a -G docker ec2-user
+log "Adding ec2-user to Docker group..."
+usermod -a -G docker ec2-user || fail "Failed to add ec2-user to docker group"
 
-# Install latest Docker Compose (v2 style)
+log "Installing Docker Compose..."
 DOCKER_COMPOSE_VERSION=$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep tag_name | cut -d '"' -f 4)
-curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+curl -L "https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-$(uname -s)-$(uname -m)" \
+  -o /usr/local/bin/docker-compose || fail "Failed to download docker-compose"
 chmod +x /usr/local/bin/docker-compose
 
 # --- PART 2: CLONE YOUR PROJECT --- #
-
 cd /home/ec2-user
 
-# Clone specific branch (adjust as needed)
-git clone --branch feature/dags https://github.com/datatribe-collective/gdd-app.git
+log "Cloning project repository (branch: feature/dags)..."
+git clone --branch feature/dags https://github.com/datatribe-collective/gdd-app.git || fail "Git clone failed"
 
-# Exit if cloning failed
-if [ ! -d "gdd-app" ]; then
-    echo "Git clone failed. Check branch or repo URL."
-    exit 1
-fi
+cd gdd-app || fail "gdd-app folder not found after clone"
 
-cd gdd-app
+# --- PART 3: BUILD AND START CONTAINERS --- #
+log "Building containers..."
+docker compose build || fail "Docker compose build failed"
 
-# --- PART 3: START CONTAINERS --- #
+log "Starting containers in detached mode..."
+docker compose up || fail "Docker compose up failed"
 
-docker compose build
-docker compose up -d
-
-# --- SCRIPT COMPLETE --- #
+log "Script completed successfully."

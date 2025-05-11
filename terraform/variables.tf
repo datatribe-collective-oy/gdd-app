@@ -1,9 +1,3 @@
-variable "ssh_allowed_ips" {
-  description = "List of CIDRs allowed for SSH access to the EC2 instance."
-  type        = list(string)
-}
-
-
 variable "instance_name" {
   description = "Value for the Name tag applied to the EC2 instance."
   type        = string
@@ -21,5 +15,7 @@ variable "iam_instance_profile_name" {
   type        = string
   default     = "Airflow-instance-profile"
 }
+
+
 
 
