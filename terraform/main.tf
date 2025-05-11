@@ -90,7 +90,7 @@ resource "aws_instance" "gdd_server" {
   iam_instance_profile = var.iam_instance_profile_name
 
 
-  user_data = file("${path.module}/user_data/ec2-setup.sh")
+  user_data = file("terraform/user_data/ec2-setup.tpl")
 
   tags = {
     Name    = "gdd-server"
