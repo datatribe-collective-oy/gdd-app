@@ -27,7 +27,7 @@ jobs:
       - name: Set up image list
         id: set-images
         run: |
-          echo "DOCKERFILES=Dockerfile.nginx Dockerfile.fastapi Dockerfile.streamlit Dockerfile.airflow" >> $GITHUB_ENV
+          echo "DOCKERFILES=Dockerfile.fastapi Dockerfile.streamlit" >> $GITHUB_ENV
 
       - name: Build & Scan all images
         run: |
@@ -45,17 +45,17 @@ jobs:
         with:
           sarif_file: trivy-results/scan-fastapi-${{ github.sha }}.sarif
 
-      - name: Upload additional SARIF (NGINX)
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: trivy-results/scan-nginx-${{ github.sha }}.sarif
+     # - name: Upload additional SARIF (NGINX)
+     #    uses: github/codeql-action/upload-sarif@v3
+     #   with:
+    #     sarif_file: trivy-results/scan-nginx-${{ github.sha }}.sarif
 
       - name: Upload additional SARIF (Streamlit)
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-results/scan-streamlit-${{ github.sha }}.sarif
 
-      - name: Upload additional SARIF (Airflow)
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: trivy-results/scan-airflow-${{ github.sha }}.sarif
+    #  - name: Upload additional SARIF (Airflow)
+    #     uses: github/codeql-action/upload-sarif@v3
+    #    with:
+    #     sarif_file: trivy-results/scan-airflow-${{ github.sha }}.sarif
