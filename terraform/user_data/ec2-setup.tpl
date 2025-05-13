@@ -20,11 +20,23 @@ systemctl start docker
 # Add ec2-user to the docker group
 usermod -aG docker ec2-user
 
-# Install Docker Compose v2 (plugin)
-dnf install -y docker-compose-plugin
+# Install Docker Compose !! Important: Do not make any changes to this part !!
+cat > /usr/local/bin/install-docker-compose.sh <<'EOF'
+#!/bin/bash
+curl -SL https://github.com/docker/compose/releases/download/v2.36.0/docker-compose-linux-x86_64 \
+  -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+EOF
 
-# Test
+bash /usr/local/bin/install-docker-compose.sh
+
+
+# Check version
 docker --version
-docker compose version || true  # Avoid failure if not installed
+docker-compose version || true
+
+
+docker-compose up -d || true
+
 
 echo "Docker setup completed."
