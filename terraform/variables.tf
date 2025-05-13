@@ -1,21 +1,32 @@
-variable "instance_name" {
-  description = "Value for the Name tag applied to the EC2 instance."
+variable "aws_profile" {
+  description = "AWS profile to use for authentication."
   type        = string
-  default     = "gdd-server"
+  default     = "default"
 }
 
-variable "ec2_instance_type" {
-  description = "EC2 instance type to use for the server."
+variable "aws_region" {
+  description = "AWS region to deploy resources."
   type        = string
-  default     = "t3.micro"
+  default     = "eu-north-1"
+}
+
+variable "ec2_key_name" {
+  description = "Name of the EC2 Key Pair for SSH access to the instance."
+  type        = string
+  # No default - this should be explicitly set by you. e.g., in a terraform.tfvars file
 }
 
 variable "iam_instance_profile_name" {
-  description = "Name of the existing IAM instance profile to attach to the EC2 instance."
+  description = "Name of the IAM instance profile to attach to the EC2 instance."
   type        = string
-  default     = "Airflow-instance-profile"
+  default     = "" # Set this to your IAM instance profile name if you have one.
+                   # If left empty, no profile will be attached.
 }
 
+variable "ssh_allowed_ips" {
+  description = "List of CIDRs allowed for SSH access"
+  type        = list(string)
+}
 
 
 

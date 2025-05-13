@@ -79,6 +79,22 @@ services:
     depends_on:
       - fastapi
 
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+      args:
+        NGINX_ALLOWED_ADMIN_IP_1: ${NGINX_ALLOWED_ADMIN_IP_1}
+        NGINX_ALLOWED_ADMIN_IP_2: ${NGINX_ALLOWED_ADMIN_IP_2}
+    depends_on:
+      - streamlit
+      - fastapi
+      - airflow-webserver 
+    ports:
+      - "80:80"
+      - "443:443"
+    networks:
+      - gdd_internal
 
 networks:
   gdd_internal:
