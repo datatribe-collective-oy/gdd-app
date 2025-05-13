@@ -10,7 +10,7 @@ on:
       - 'terraform/**'
     branches: [ "main" ]
   schedule:
-    - cron: '35 8 * * 2' 
+    - cron: '5 9 * * 2' 
 
 permissions:
   contents: read
@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Run Trivy IaC scan on Terraform folder
-        uses: aquasecurity/trivy-action@v0.11.2
+        uses: aquasecurity/trivy-action@v0.30.0
         with:
           scan-type: 'config'
           scan-ref: 'terraform'
