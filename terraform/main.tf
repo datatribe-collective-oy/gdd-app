@@ -134,7 +134,7 @@ resource "aws_instance" "gdd_server" {
 
 resource "aws_key_pair" "gdd_key" {
   key_name   = var.ec2_key_name
-  public_key = file("~/.ssh/gdd_key.pub")
+  public_key = file("${pathexpand("~/.ssh/gdd_key.pub")}")
 }
 
 # Layer 4: Data Storage (S3)

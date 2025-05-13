@@ -4,7 +4,7 @@ FROM nginx:1.28
 ARG NGINX_ALLOWED_ADMIN_IP_1
 ARG NGINX_ALLOWED_ADMIN_IP_2
 
-# Set environment variables (optional, if you want them visible inside container)
+# Set environment variables for admin IPs
 ENV NGINX_ALLOWED_ADMIN_IP_1=${NGINX_ALLOWED_ADMIN_IP_1}
 ENV NGINX_ALLOWED_ADMIN_IP_2=${NGINX_ALLOWED_ADMIN_IP_2}
 

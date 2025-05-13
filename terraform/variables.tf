@@ -13,14 +13,13 @@ variable "aws_region" {
 variable "ec2_key_name" {
   description = "Name of the EC2 Key Pair for SSH access to the instance."
   type        = string
-  # No default - this should be explicitly set by you. e.g., in a terraform.tfvars file
+  # No default - Set by in a terraform.tfvars file. Avoid silent EC2 with no SSH access.
 }
 
 variable "iam_instance_profile_name" {
   description = "Name of the IAM instance profile to attach to the EC2 instance."
   type        = string
-  default     = "" # Set this to your IAM instance profile name if you have one.
-                   # If left empty, no profile will be attached.
+  default     = "" # Allows to be overridden from a tfvars file. Skip attaching profile if not needed.
 }
 
 variable "ssh_allowed_ips" {
