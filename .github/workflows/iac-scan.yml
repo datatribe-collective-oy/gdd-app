@@ -10,7 +10,7 @@ on:
       - 'terraform/**'
     branches: [ "main" ]
   schedule:
-    - cron: '12 8 * * 2'  # Every Tuesday at 08:12 UTC
+    - cron: '35 8 * * 2' 
 
 permissions:
   contents: read
