@@ -2,9 +2,9 @@ services:
   postgres:
     image: postgres:15
     environment:
-      POSTGRES_USER: ${POSTGRES_USER_E}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD_E}
-      POSTGRES_DB: ${POSTGRES_DB_E}
+      - POSTGRES_USER=${POSTGRES_USER_E}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_E}
+      - POSTGRES_DB=${POSTGRES_DB_E}
     networks:
       - gdd_internal
     volumes:
@@ -15,24 +15,25 @@ services:
       context: .
       dockerfile: Dockerfile.airflow
     environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER_E}:${POSTGRES_PASSWORD_E}@postgres/${POSTGRES_DB_E}
-      AIRFLOW_ADMIN_USER: ${AIRFLOW_ADMIN_USER}
-      AIRFLOW_ADMIN_PASSWORD: ${AIRFLOW_ADMIN_PASSWORD}
+      - AIRFLOW__CORE__ENABLE_ASYNC_SUPPORT=False
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER_E}:${POSTGRES_PASSWORD_E}@postgres/${POSTGRES_DB_E}
+      - AIRFLOW_ADMIN_USER=${AIRFLOW_USER_E}
+      - AIRFLOW_ADMIN_PASSWORD=${AIRFLOW_PASSWORD_E}
     depends_on:
       - postgres
     entrypoint: ["/init-airflow.sh"]
     networks:
       - gdd_internal
 
-
   airflow-webserver:
     build:
       context: .
       dockerfile: Dockerfile.airflow
     environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER_E}:${POSTGRES_PASSWORD_E}@postgres/${POSTGRES_DB_E}
+      - AIRFLOW__CORE__ENABLE_ASYNC_SUPPORT=False
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER_E}:${POSTGRES_PASSWORD_E}@postgres/${POSTGRES_DB_E}
     depends_on:
       - postgres
       - airflow-init
@@ -47,15 +48,14 @@ services:
       context: .
       dockerfile: Dockerfile.airflow
     environment:
-      AIRFLOW__CORE__EXECUTOR: LocalExecutor
-      AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER_E}:${POSTGRES_PASSWORD_E}@postgres/${POSTGRES_DB_E}
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER_E}:${POSTGRES_PASSWORD_E}@postgres/${POSTGRES_DB_E}
     depends_on:
       - postgres
       - airflow-init
     networks:
       - gdd_internal
     command: scheduler
-
 
   fastapi:
     build:
@@ -83,9 +83,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.nginx
-      args:
-        NGINX_ALLOWED_ADMIN_IP_1: ${NGINX_ALLOWED_ADMIN_IP_1}
-        NGINX_ALLOWED_ADMIN_IP_2: ${NGINX_ALLOWED_ADMIN_IP_2}
+    environment:
+      - NGINX_ALLOWED_ADMIN_IP_1=${NGINX_ALLOWED_IP_1E}
+      - NGINX_ALLOWED_ADMIN_IP_2=${NGINX_ALLOWED_IP_2E}
     depends_on:
       - streamlit
       - fastapi

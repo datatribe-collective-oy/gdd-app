@@ -10,14 +10,11 @@ USER airflow
 
 # Copy all project files
 COPY . /opt/airflow/
+COPY init-airflow.sh /
+
 WORKDIR /opt/airflow
 
-# Copy the init script
-COPY init-airflow.sh /init-airflow.sh
-
-# Install dependencies
-RUN pip install .
+# Install the rest of the dependencies
+RUN pip install --no-cache-dir .
 
 ENV AIRFLOW_HOME=/opt/airflow
-
-

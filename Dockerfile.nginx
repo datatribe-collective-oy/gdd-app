@@ -1,13 +1,5 @@
 FROM nginx:1.28
 
-# Arguments for admin IPs
-ARG NGINX_ALLOWED_ADMIN_IP_1
-ARG NGINX_ALLOWED_ADMIN_IP_2
-
-# Set environment variables for admin IPs
-ENV NGINX_ALLOWED_ADMIN_IP_1=${NGINX_ALLOWED_ADMIN_IP_1}
-ENV NGINX_ALLOWED_ADMIN_IP_2=${NGINX_ALLOWED_ADMIN_IP_2}
-
 # Create SSL certs for HTTPS, dev only
 RUN mkdir -p /etc/ssl/certs /etc/ssl/private && \
     openssl req -x509 -nodes -days 365 \
@@ -20,4 +12,8 @@ RUN mkdir -p /etc/ssl/certs /etc/ssl/private && \
 COPY nginx/nginx.conf.template /etc/nginx/templates/nginx.conf.template
 
 # On startup, envsubst to substitute the IP variables into the nginx.conf
-CMD ["sh", "-c", "envsubst '$$NGINX_ALLOWED_ADMIN_IP_1 $$NGINX_ALLOWED_ADMIN_IP_2' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
+ENTRYPOINT [ "sh", "-c" ]
+CMD ["envsubst '$$NGINX_ALLOWED_ADMIN_IP_1 $$NGINX_ALLOWED_ADMIN_IP_2' \
+     < /etc/nginx/templates/nginx.conf.template \
+     > /etc/nginx/conf.d/default.conf \
+   && exec nginx -g 'daemon off;'"]

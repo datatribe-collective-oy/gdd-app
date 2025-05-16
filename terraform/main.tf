@@ -157,6 +157,7 @@ resource "aws_s3_bucket_public_access_block" "gdd_raw_data_block" {
   restrict_public_buckets = true
 }
 
+
 # Outputs
 output "gdd_server_public_ip" {
   description = "Public IP address of the GDD server."

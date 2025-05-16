@@ -27,5 +27,3 @@ variable "ssh_allowed_ips" {
   type        = list(string)
 }
 
-
-
