@@ -28,6 +28,9 @@ terraform/.terraform/
 dags/airflow.db
 dags/airflow-webserver.pid
 dags/logs/
+logs/
+/logs/
+
 
 # Python cache in any folder
 **/.pytest_cache

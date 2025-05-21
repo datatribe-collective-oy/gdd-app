@@ -1,20 +1,21 @@
 FROM apache/airflow:2.8.2-python3.11
 
-USER root
-RUN apt-get update && \
-    apt-get install -y build-essential gcc && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
 USER airflow
 
+ENV AIRFLOW_HOME=/opt/airflow
+
+COPY requirements.txt /
+RUN pip install --no-cache-dir "apache-airflow==${AIRFLOW_VERSION}" -r /requirements.txt
+
+
+COPY init-airflow.sh /opt/airflow/init-airflow.sh
+
 # Copy all project files
-COPY . /opt/airflow/
-COPY init-airflow.sh /
+COPY data_fetcher /opt/airflow/data_fetcher/
+COPY dags /opt/airflow/dags/
+COPY README.md /opt/airflow/README.md
+COPY pyproject.toml /opt/airflow/pyproject.toml
 
-WORKDIR /opt/airflow
-
-# Install the rest of the dependencies
 RUN pip install --no-cache-dir .
 
-ENV AIRFLOW_HOME=/opt/airflow
+WORKDIR /opt/airflow

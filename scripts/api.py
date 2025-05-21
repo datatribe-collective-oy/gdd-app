@@ -5,19 +5,19 @@ import uvicorn
 app = FastAPI()
 
 
-@app.get("/api/")
+@app.get("/")
 def read_root(response: Response):
     response.status_code
     return {"message": "API Root OK."}
 
 
-@app.get("/api/gdd/")
+@app.get("/gdd/")
 def get_gdd(response: Response):
     response.status_code
     return {"message": "Get GDD."}
 
 
-@app.get("/api/weather/")
+@app.get("/weather/")
 def get_weather(response: Response):
     response.status_code
     return {"message": "Estimate Weather."}

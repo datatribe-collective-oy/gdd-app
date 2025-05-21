@@ -1,61 +1,86 @@
 services:
-  postgres:
-    image: postgres:15
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER_E}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_E}
-      - POSTGRES_DB=${POSTGRES_DB_E}
-    networks:
-      - gdd_internal
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
   airflow-init:
     build:
       context: .
       dockerfile: Dockerfile.airflow
     environment:
-      - AIRFLOW__CORE__ENABLE_ASYNC_SUPPORT=False
-      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      #- AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER_E}:${POSTGRES_PASSWORD_E}@postgres/${POSTGRES_DB_E}
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      # Variables for the init script.
       - AIRFLOW_ADMIN_USER=${AIRFLOW_USER_E}
+      - AIRFLOW_ADMIN_FIRSTNAME=${AIRFLOW_FIRSTNAME_E}
+      - AIRFLOW_ADMIN_LASTNAME=${AIRFLOW_LASTNAME_E}
+      - AIRFLOW_ADMIN_ROLE=${AIRFLOW_ROLE_E}
+      - AIRFLOW_ADMIN_EMAIL=${AIRFLOW_EMAIL_E}
       - AIRFLOW_ADMIN_PASSWORD=${AIRFLOW_PASSWORD_E}
-    depends_on:
-      - postgres
-    entrypoint: ["/init-airflow.sh"]
+    entrypoint: ["/opt/airflow/init-airflow.sh"]
     networks:
       - gdd_internal
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   airflow-webserver:
     build:
       context: .
       dockerfile: Dockerfile.airflow
     environment:
-      - AIRFLOW__CORE__ENABLE_ASYNC_SUPPORT=False
-      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER_E}:${POSTGRES_PASSWORD_E}@postgres/${POSTGRES_DB_E}
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False 
     depends_on:
-      - postgres
-      - airflow-init
+      airflow-init:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
     ports:
       - "8080:8080"
     networks:
       - gdd_internal
     command: webserver
+    volumes:
+      - ./dags:/opt/airflow/dags 
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
 
   airflow-scheduler:
     build:
       context: .
       dockerfile: Dockerfile.airflow
     environment:
-      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER_E}:${POSTGRES_PASSWORD_E}@postgres/${POSTGRES_DB_E}
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False 
     depends_on:
-      - postgres
-      - airflow-init
+      airflow-init:
+        condition: service_completed_successfully
+      postgres:
+        condition: service_healthy
     networks:
       - gdd_internal
     command: scheduler
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - ./logs:/opt/airflow/logs
+      - ./plugins:/opt/airflow/plugins
+
+  postgres:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_E}
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_E}
+      - POSTGRES_DB=${POSTGRES_DB_E}
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+    networks:
+      - gdd_internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER_E} -d ${POSTGRES_DB_E}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   fastapi:
     build:
@@ -89,7 +114,7 @@ services:
     depends_on:
       - streamlit
       - fastapi
-      - airflow-webserver 
+      - airflow-webserver
     ports:
       - "80:80"
       - "443:443"
@@ -102,4 +127,7 @@ networks:
     name: gdd_internal_net
 
 volumes:
-  postgres_data:
+  postgres_db: 
+  airflow_dags: 
+  airflow_logs: 
+  airflow_plugins:

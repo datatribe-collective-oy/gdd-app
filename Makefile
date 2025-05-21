@@ -1,70 +1,115 @@
-.PHONY: fastapi-b streamlit-b up down unit-t integration-t black ruff install ruff-check venv nodemon terra-plan terra-apply terra-apply-tfvars terra-destroy terra-list terra-fmt terra-valid dev
+# Default shell for executing recipes
+SHELL := /bin/bash
+
+# Help Target: Parses ## comments from targets
+.PHONY: help
+help:
+	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+.PHONY: venv unit-t integration-t ruff-check ruff black install api nodemon
 
 # Application dev
 
-venv: # create virtual environment
-	poetry env activate
+venv: ## Create or activate poetry virtual environment
+	poetry shell
 
-unit-t: # run unit tests
+unit-t: ## Run unit tests
 	poetry run pytest tests/unit
 
-integration-t: # run integration tests
+integration-t: ## Run integration tests
 	poetry run pytest tests/integration
 
-ruff-check: # check code with ruff
+ruff-check: ## Check code with ruff
 	poetry run ruff check .
 
-ruff: # lint and fix code
+ruff: ## Lint and fix code with ruff
 	poetry run ruff check . --fix
 
-black: #format code
+black: ## Format code with black
 	poetry run black .
 
-install: # install dependencies
+install: ## Install dependencies using poetry
 	poetry install --no-root
 
-api: # run fastapi app
+api: ## Run FastAPI app directly using poetry
 	poetry run python -m scripts.api
 
-nodemon: # run dev server similar to nodemon@node.js
+nodemon: ## Run FastAPI dev server with auto-reload (uvicorn)
 	poetry run uvicorn scripts.api:app --reload
 
-# Docker containers
-fastapi-b: # build fastapi container
+# Docker containers (using docker compose)
+.PHONY: build-core build-services build-all build-all-no-cache up up-d down down-v logs-service ps restart-service
+
+build-core: ## Build nginx, streamlit, and fastapi services without cache
+	docker compose build --no-cache nginx streamlit fastapi
+
+build-services: ## Build nginx, streamlit, and fastapi services (uses cache)
+	docker compose build nginx streamlit fastapi
+
+build-all: ## Build all services defined in docker-compose.yaml (uses cache)
+	docker compose build
+
+build-all-no-cache: ## Build all services defined in docker-compose.yaml without cache
+	docker compose build --no-cache
+
+up-core: ## Start core services (nginx, streamlit, fastapi) in foreground (interactive)
+	docker compose up -d nginx streamlit fastapi
+
+up: ## Start all services in foreground (interactive)
+	docker compose up
+
+up-d: ## Start all services in detached mode (background)
+	docker compose up -d
+
+down: ## Stop and remove containers
+	docker compose down
+
+down-v: ## Stop and remove containers and their volumes
+	docker compose down -v
+
+logs-service: ## View logs for a specific service (e.g., make logs-service service=fastapi)
+	@if [ -z "$(service)" ]; then \
+		echo "Error: service name not provided. Usage: make logs-service service=<name>"; \
+		exit 1; \
+	fi
+	docker compose logs -f $(service)
+
+ps: ## List running Docker Compose services
+	docker compose ps
+
+restart-service: ## Restart a specific service (e.g., make restart-service service=fastapi)
+	@if [ -z "$(service)" ]; then \
+		echo "Error: service name not provided. Usage: make restart-service service=<name>"; \
+		exit 1; \
+	fi
+	docker compose restart $(service)
+
+# Docker containers (individual image builds - if needed for specific tagging/pushing outside compose)
+.PHONY: fastapi-b streamlit-b
+
+fastapi-b: ## Build gdd-fastapi image directly using Dockerfile.fastapi
 	docker build -f Dockerfile.fastapi -t gdd-fastapi .
 
-streamlit-b: # build streamlit container
+streamlit-b: ## Build gdd-streamlit image directly using Dockerfile.streamlit
 	docker build -f Dockerfile.streamlit -t gdd-streamlit .
 
-up: # start containers
-	docker-compose up
-
-down: # stop and remove containers
-	docker-compose down
-
 # Terraform setup
+.PHONY: terra-plan terra-apply terra-destroy terra-list terra-fmt terra-valid
 
-terra-plan: # preview terraform changes
+terra-plan: ## Preview terraform changes (init + plan)
 	cd terraform && terraform init && terraform plan
 
-terra-apply: # apply terraform changes
-	cd terraform && terraform apply -var-file=dev.tfvars
+terra-apply: ## Apply terraform changes using dev.tfvars (init + apply, auto-approve)
+	cd terraform && terraform init && terraform apply -var-file=dev.tfvars -auto-approve
 
-terra-apply-tfvars: # ! apply terraform changes with tfvars
-	cd terraform && terraform init && terraform apply -var-file=dev.tfvars
+terra-destroy: ## Destroy terraform resources with dev.tfvars (auto-approve)
+	cd terraform && terraform destroy -var-file=dev.tfvars -auto-approve
 
-terra-destroy: # ! destroy terraform resources
-	cd terraform && terraform destroy -var-file=dev.tfvars
-
-terra-list: # list resources in terraform state
+terra-list: ## List resources in terraform state
 	cd terraform && terraform state list
 
-terra-fmt: # format terraform code
-	cd terraform && terraform fmt
+terra-fmt: ## Format terraform code recursively
+	cd terraform && terraform fmt -recursive
 
-terra-valid: # validate terraform code
+terra-valid: ## Validate terraform code
 	cd terraform && terraform validate
-
-dev:
-	bash env-dev.sh
-
