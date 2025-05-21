@@ -1,10 +1,24 @@
 services:
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER_E}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_E}
+      - POSTGRES_DB=${POSTGRES_DB_E}
+    volumes:
+      - postgres_db:/var/lib/postgresql/data
+    networks:
+      - gdd_internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER_E} -d ${POSTGRES_DB_E}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
   airflow-init:
     build:
       context: .
       dockerfile: Dockerfile.airflow
     environment:
-      #- AIRFLOW__CORE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@postgres/airflow
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER_E}:${POSTGRES_PASSWORD_E}@postgres/${POSTGRES_DB_E}
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       # Variables for the init script.
@@ -64,23 +78,6 @@ services:
       - ./dags:/opt/airflow/dags
       - ./logs:/opt/airflow/logs
       - ./plugins:/opt/airflow/plugins
-
-  postgres:
-    image: postgres:13
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER_E}
-      - POSTGRES_HOST_AUTH_METHOD=trust
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD_E}
-      - POSTGRES_DB=${POSTGRES_DB_E}
-    volumes:
-      - postgres_db:/var/lib/postgresql/data
-    networks:
-      - gdd_internal
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER_E} -d ${POSTGRES_DB_E}"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
 
   fastapi:
     build:
