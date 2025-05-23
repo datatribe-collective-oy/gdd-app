@@ -1,21 +1,37 @@
-from config import MAIZE_INDIA_LOCATIONS, SORGHUM_KENYA_LOCATIONS
+import os
+from .config import MAIZE_INDIA_LOCATIONS, SORGHUM_KENYA_LOCATIONS
 from fetcher import fetch_weather_data
 from validator import validate_weather_data
 from saver import save_partitioned_parquet_s3
 
 if __name__ == "__main__":
-    all_locations = {}
+    # Get bucket name and base prefix from environment variables.
+    S3_BUCKET_NAME = os.getenv("BRONZE_BUCKET", "gdd-raw-weather-data")
+    BASE_S3_PREFIX = os.getenv("BRONZE_S3_PREFIX", "bronze")
 
-    for loc, coords in MAIZE_INDIA_LOCATIONS.items():
-        all_locations[f"maize_india__{loc}"] = coords
+    # Define locations to process.
+    locations_to_process_config = {
+        "maize": MAIZE_INDIA_LOCATIONS,
+        "sorghum": SORGHUM_KENYA_LOCATIONS
+    }
 
-    for loc, coords in SORGHUM_KENYA_LOCATIONS.items():
-        all_locations[f"sorghum_kenya__{loc}"] = coords
+    print(f"Starting batch processing. Target S3 Bucket: {S3_BUCKET_NAME}, Base Prefix: {BASE_S3_PREFIX}")
 
-    for location, (lat, lon) in all_locations.items():
-        print(f"Fetching data for {location}...")
+    for crop_id, locations_map in locations_to_process_config.items():
+        for location_id, (lat, lon) in locations_map.items():
+            print(f"Processing: Crop='{crop_id}', Location='{location_id}', Coords=({lat}, {lon})")
+            try:
+                print(f"  1. Fetching weather data for {location_id}...")
+                df_raw = fetch_weather_data(lat, lon, location_id)
+                df_raw['crop_id'] = crop_id  # Add crop_id for validation and saving.
 
-        df = fetch_weather_data(lat, lon, location)
-        df = validate_weather_data(df)
-        bucket = "gdd-raw-weather-data"
-        save_partitioned_parquet_s3(df, bucket)
+                print(f"  2. Validating weather data for {location_id}...")
+                df_validated = validate_weather_data(df_raw.copy())
+
+                print(f"  3. Saving data for {location_id} to S3...")
+                save_partitioned_parquet_s3(df_validated, bucket=S3_BUCKET_NAME, base_prefix=BASE_S3_PREFIX)
+                print(f"  Data for {crop_id} - {location_id} saved successfully.")
+            except Exception as e:
+                print(f"  ERROR processing {crop_id} - {location_id}: {e}")
+
+    print("Batch processing finished.")

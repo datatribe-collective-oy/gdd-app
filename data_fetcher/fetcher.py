@@ -1,15 +1,24 @@
 import requests
 import pandas as pd
+import logging # For more informative error messages
 from .config import HEADERS
 
+
+logger = logging.getLogger(__name__)
 
 def fetch_weather_data(lat, lon, location_id):
     url = (
         f"https://api.met.no/weatherapi/locationforecast/2.0/compact"
         f"?lat={lat}&lon={lon}"
     )
-    response = requests.get(url, headers=HEADERS)
-    response.raise_for_status()
+    try:
+        # Timeout and specific exception handling.
+        response = requests.get(url, headers=HEADERS, timeout=10)
+        response.raise_for_status()  # Raises an HTTPError for bad responses.
+    except requests.exceptions.RequestException as e:
+        logger.error(f"Failed to fetch weather data for {location_id} ({lat}, {lon}) from {url}: {e}")
+        # Re-raising the exception, so it can be handled upstream if needed.
+        raise
 
     data = response.json()
 
