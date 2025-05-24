@@ -11,7 +11,7 @@ help:
 # Application dev
 
 venv: ## Create or activate poetry virtual environment
-	poetry shell
+	poetry env activate
 
 unit-t: ## Run unit tests
 	poetry run pytest tests/unit
