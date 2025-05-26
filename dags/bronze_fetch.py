@@ -23,18 +23,21 @@ with DAG(
     catchup=False,
     tags=["bronze", "weather", "GDD"],
 ) as dag:
-
     crops_locations = {
-    "maize": MAIZE_INDIA_LOCATIONS,
-    "sorghum": SORGHUM_KENYA_LOCATIONS
-}
+        "maize": MAIZE_INDIA_LOCATIONS,
+        "sorghum": SORGHUM_KENYA_LOCATIONS,
+    }
 
 bucket = "gdd-raw-weather-data"
 
+
 def fetch_validate_save(location, lat, lon, crop):
-    df = fetch_weather_data(lat, lon, location, crop)
+    df = fetch_weather_data(lat, lon, location)
+    df["crop_id"] = crop
     df = validate_weather_data(df)
+    # Save the validated DataFrame to S3
     save_partitioned_parquet_s3(df, bucket=bucket)
+
 
 for crop, locations in crops_locations.items():
     for location, (lat, lon) in locations.items():
@@ -43,5 +46,3 @@ for crop, locations in crops_locations.items():
             python_callable=fetch_validate_save,
             op_args=[location, lat, lon, crop],
         )
-
-

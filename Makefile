@@ -6,7 +6,7 @@ SHELL := /bin/bash
 help:
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-.PHONY: venv unit-t integration-t ruff-check ruff black install api nodemon
+.PHONY: venv unit-t integration-t ruff-check ruff install nodemon data-fetcher gdd-counter
 
 # Application dev
 
@@ -25,20 +25,26 @@ ruff-check: ## Check code with ruff
 ruff: ## Lint and fix code with ruff
 	poetry run ruff check . --fix
 
-black: ## Format code with black
-	poetry run black .
-
 install: ## Install dependencies using poetry
 	poetry install --no-root
 
-api: ## Run FastAPI app directly using poetry
-	poetry run python -m scripts.api
-
 nodemon: ## Run FastAPI dev server with auto-reload (uvicorn)
-	poetry run uvicorn scripts.api:app --reload
+	poetry run uvicorn api_service.main:app --reload
+
+data-fetcher: ## Run the data fetcher to acquire and store bronze layer data
+	poetry run python -m data_fetcher.main
+
+gdd-counter: ## Run GDD counter. Processes last 2 days by default. Optionally provide bronze_path="<glob_pattern>"
+	@if [ -n "$(bronze_path)" ]; then \
+		echo "Running GDD counter with provided bronze_path: $(bronze_path)"; \
+		poetry run python -m gdd_counter.processor "$(bronze_path)"; \
+	else \
+		echo "Running GDD counter for the last 2 days (default behavior)."; \
+		poetry run python -m gdd_counter.processor; \
+	fi
 
 # Docker containers (using docker compose)
-.PHONY: build-core build-services build-all build-all-no-cache up up-d down down-v logs-service ps restart-service
+.PHONY: build-core build-services build-all build-no-c up up-d down down-v logs-service ps restart-service
 
 build-core: ## Build nginx, streamlit, and fastapi services without cache
 	docker compose build --no-cache nginx streamlit fastapi
@@ -49,7 +55,7 @@ build-services: ## Build nginx, streamlit, and fastapi services (uses cache)
 build-all: ## Build all services defined in docker-compose.yaml (uses cache)
 	docker compose build
 
-build-all-no-cache: ## Build all services defined in docker-compose.yaml without cache
+build-no-c: ## Build all services defined in docker-compose.yaml without cache
 	docker compose build --no-cache
 
 up-core: ## Start core services (nginx, streamlit, fastapi) in foreground (interactive)
