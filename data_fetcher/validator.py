@@ -10,9 +10,7 @@ the expected number of data points for a given day.
 import pandas as pd
 
 
-def validate_weather_data(
-    df: pd.DataFrame, target_processing_date: pd.Timestamp
-):
+def validate_weather_data(df: pd.DataFrame, target_processing_date: pd.Timestamp):
     """
     Validates a DataFrame containing hourly weather data for a specific processing date.
 
