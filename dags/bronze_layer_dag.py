@@ -46,7 +46,7 @@ def run_make_data_fetcher(**kwargs):
         print(
             f"ERROR: The 'make' command was not found, or the working directory '{project_root}' does not exist."
         )
-        print(f"Please ensure 'make' is installed and in PATH, and the project_root is correct and accessible.")
+        print("Please ensure 'make' is installed and in PATH, and the project_root is correct and accessible.")
         raise
     except PermissionError as e:
         print(
