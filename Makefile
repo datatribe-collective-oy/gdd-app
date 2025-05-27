@@ -24,7 +24,6 @@ ruff-check: ## Check code with ruff
 
 ruff: ## Lint and fix code with ruff
 	poetry run ruff check . --fix
-
 install: ## Install dependencies using poetry
 	poetry install --no-root
 
