@@ -44,6 +44,12 @@ services:
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER_E}:${POSTGRES_PASSWORD_E}@postgres/${POSTGRES_DB_E}
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      # MinIO Configuration for the data_fetcher script
+      - STORAGE_BACKEND=minio
+      - MINIO_ENDPOINT_URL=http://minio:9000
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_DATA_BUCKET_NAME=${MINIO_DATA_BUCKET_NAME} 
     depends_on:
       airflow-init:
         condition: service_completed_successfully
@@ -67,6 +73,12 @@ services:
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://${POSTGRES_USER_E}:${POSTGRES_PASSWORD_E}@postgres/${POSTGRES_DB_E}
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      # MinIO Configuration for the data_fetcher script
+      - STORAGE_BACKEND=minio
+      - MINIO_ENDPOINT_URL=http://minio:9000 
+      - MINIO_ACCESS_KEY=${MINIO_ACCESS_KEY}
+      - MINIO_SECRET_KEY=${MINIO_SECRET_KEY}
+      - MINIO_DATA_BUCKET_NAME=${MINIO_DATA_BUCKET_NAME} 
     depends_on:
       airflow-init:
         condition: service_completed_successfully

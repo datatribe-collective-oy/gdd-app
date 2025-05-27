@@ -32,10 +32,10 @@ nodemon: ## Run FastAPI dev server with auto-reload (uvicorn)
 	poetry run uvicorn api_service.main:app --reload
 
 data-fetcher-poetry: ## (Local Dev) Run data fetcher using poetry
-	poetry run python -m data_fetcher.main $(if $(DATE),--date $(DATE),)
-
+	poetry run python -m data_fetcher.main
+	
 data-fetcher: ## (CI/Container) Run data fetcher directly
-	python -m data_fetcher.main $(if $(DATE),--date $(DATE),)
+	python -m data_fetcher.main
 
 gdd-counter-poetry: ## (Local Dev) Run GDD counter using poetry. Optionally provide bronze_path="<glob_pattern>"
 	@if [ -n "$(bronze_path)" ]; then \
