@@ -34,7 +34,7 @@ docker-compose version || true
 cd /home/ec2-user
 
 # Download docker-compose.yml from GitHub.
-curl -sSL https://raw.githubusercontent.com/datatribe-collective/gdd-app/feature/dags/docker-compose.yaml\
+curl -sSL https://raw.githubusercontent.com/datatribe-collective/gdd-app/docker-compose.yaml\
   -o docker-compose.yaml
 
 # Fetch secrets from SSM and decrypt them.
