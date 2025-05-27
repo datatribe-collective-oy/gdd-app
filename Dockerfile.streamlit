@@ -1,2 +1,18 @@
 FROM python:3.11-slim
-CMD ["sleep", "infinity"]
+
+
+WORKDIR /app
+
+COPY pyproject.toml ./
+COPY README.md ./
+COPY universal ./universal/
+COPY scripts ./scripts/
+COPY data_fetcher ./data_fetcher/ 
+COPY gdd_counter ./gdd_counter/   
+
+RUN pip install --no-cache-dir .
+
+# Expose default port for Streamlit.
+EXPOSE 8501
+
+CMD ["streamlit", "run", "scripts/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]

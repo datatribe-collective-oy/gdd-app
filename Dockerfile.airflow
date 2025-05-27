@@ -3,19 +3,20 @@ FROM apache/airflow:2.8.2-python3.11
 USER airflow
 
 ENV AIRFLOW_HOME=/opt/airflow
+WORKDIR ${AIRFLOW_HOME}
 
-COPY requirements.txt /
-RUN pip install --no-cache-dir "apache-airflow==${AIRFLOW_VERSION}" -r /requirements.txt
+# Copy files required for building and installing project packages.
+COPY pyproject.toml ./ 
+COPY universal ./universal/
+COPY scripts ./scripts/
+COPY data_fetcher ./data_fetcher/
+COPY gdd_counter ./gdd_counter/
+COPY README.md ./README.md
 
-
-COPY init-airflow.sh /opt/airflow/init-airflow.sh
-
-# Copy all project files
-COPY data_fetcher /opt/airflow/data_fetcher/
-COPY dags /opt/airflow/dags/
-COPY README.md /opt/airflow/README.md
-COPY pyproject.toml /opt/airflow/pyproject.toml
-
+# Install the project packages and their dependencies defined in pyproject.toml.
 RUN pip install --no-cache-dir .
 
-WORKDIR /opt/airflow
+# Copy Airflow-specific runtime files
+COPY init-airflow.sh ./init-airflow.sh
+COPY dags ./dags/
+COPY Makefile ./Makefile

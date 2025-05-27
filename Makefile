@@ -31,16 +31,28 @@ install: ## Install dependencies using poetry
 nodemon: ## Run FastAPI dev server with auto-reload (uvicorn)
 	poetry run uvicorn api_service.main:app --reload
 
-data-fetcher: ## Run the data fetcher to acquire and store bronze layer data
-	poetry run python -m data_fetcher.main
+data-fetcher-poetry: ## (Local Dev) Run data fetcher using poetry
+	poetry run python -m data_fetcher.main $(if $(DATE),--date $(DATE),)
 
-gdd-counter: ## Run GDD counter. Processes last 2 days by default. Optionally provide bronze_path="<glob_pattern>"
+data-fetcher: ## (CI/Container) Run data fetcher directly
+	python -m data_fetcher.main $(if $(DATE),--date $(DATE),)
+
+gdd-counter-poetry: ## (Local Dev) Run GDD counter using poetry. Optionally provide bronze_path="<glob_pattern>"
 	@if [ -n "$(bronze_path)" ]; then \
 		echo "Running GDD counter with provided bronze_path: $(bronze_path)"; \
 		poetry run python -m gdd_counter.processor "$(bronze_path)"; \
 	else \
 		echo "Running GDD counter for the last 2 days (default behavior)."; \
 		poetry run python -m gdd_counter.processor; \
+	fi
+
+gdd-counter: ## (CI/Container) Run GDD counter directly. Optionally provide bronze_path="<glob_pattern>"
+	@if [ -n "$(bronze_path)" ]; then \
+		echo "Running GDD counter with provided bronze_path: $(bronze_path)"; \
+		python -m gdd_counter.processor "$(bronze_path)"; \
+	else \
+		echo "Running GDD counter for the last 2 days (default behavior)."; \
+		python -m gdd_counter.processor; \
 	fi
 
 # Docker containers (using docker compose)
