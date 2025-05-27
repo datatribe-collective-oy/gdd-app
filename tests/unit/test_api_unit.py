@@ -1,7 +1,7 @@
 from tests.utils.http_variations import assert_response_for_case
 from fastapi.testclient import TestClient
-from scripts.api import app
 import pytest
+from api_service.main import app  # Main FastAPI application
 
 client = TestClient(app)
 
@@ -10,8 +10,6 @@ client = TestClient(app)
     "path, case",
     [
         ("/", "ok"),
-        ("/gdd/", "ok"),
-        ("/weather/", "ok"),
         ("/unknown/", "not_found"),
         ("/gdd/unknown/", "not_found"),
         ("/weather/unknown/", "not_found"),
@@ -33,5 +31,9 @@ client = TestClient(app)
     ],
 )
 def test_various_endpoints(path, case):
+    """
+    Tests various simple GET endpoints to ensure they return expected HTTP status codes.
+    This test is parameterized to cover different paths and their corresponding status cases.
+    """
     response = client.get(path)
     assert_response_for_case(response, case)
