@@ -2,15 +2,15 @@ name: CI Test Workflow
 
 on:
   push:
-    branches: [main] 
+    branches: [main]
   pull_request:
-    branches: [main] 
+    branches: [main]
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.12"] 
+        python-version: ["3.12"]
 
     steps:
       - name: Checkout code
@@ -25,7 +25,7 @@ jobs:
         uses: snok/install-poetry@v1
         with:
           virtualenvs-create: true
-          virtualenvs-in-project: true 
+          virtualenvs-in-project: true
           installer-parallel: true
 
       - name: Load cached venv
@@ -42,7 +42,6 @@ jobs:
       - name: Run Ruff linting
         run: |
           poetry run ruff check . --fix
-          poetry run ruff check .
 
       - name: Run unit tests
         run: |

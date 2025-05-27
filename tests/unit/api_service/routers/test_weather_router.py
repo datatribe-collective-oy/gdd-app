@@ -74,9 +74,11 @@ def test_get_weather_data_not_found(mock_data_service, mock_s3_client_app_overri
     assert "Weather data not found" in response.json()["detail"]
 
 
-def test_get_weather_data_invalid_date_format():
+def test_get_weather_data_invalid_date_format(mock_s3_client_app_override):
     """Test request with an invalid date format (400)."""
     response = client.get(
+        # mock_s3_client_app_override is included to ensure S3 client is mocked,
+        # allowing the app to reach validation logic before any S3 interaction.
         "/weather/?location_id=Test&crop_id=Test&date=2023/01/01"  # Invalid date format.
     )
     assert response.status_code == 400
@@ -127,7 +129,9 @@ def test_get_weather_data_runtime_error(mock_data_service, mock_s3_client_app_ov
         ("location_id=Belagavi&crop_id=maize"),  # Missing date.
     ],
 )
-def test_get_weather_data_missing_parameters(query_params):
+def test_get_weather_data_missing_parameters(query_params, mock_s3_client_app_override):
     """Test requests with missing required query parameters (422)."""
     response = client.get(f"/weather/?{query_params}")
+    # mock_s3_client_app_override is included to ensure S3 client is mocked,
+    # allowing the app to reach validation logic before any S3 interaction.
     assert response.status_code == 422  # Unprocessable Entity for missing params.

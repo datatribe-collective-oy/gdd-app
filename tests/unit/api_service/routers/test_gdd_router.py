@@ -27,7 +27,7 @@ GDD_DAYS_WINDOW = 29
 # Patch the data retrieval service to mock its behavior.
 @patch("api_service.routers.gdd_router.data_retrieval_service")
 def test_get_gdd_data_success(
-    mock_data_service, 
+    mock_data_service,
     mock_s3_client_app_override,
     location_id,
     crop_id,
@@ -51,7 +51,7 @@ def test_get_gdd_data_success(
     assert response.status_code == expected_status
     assert response.json() == mock_gdd_data
     mock_data_service.get_gdd_data_for_period.assert_called_once_with(
-        s3_client=mock_s3_client_app_override, 
+        s3_client=mock_s3_client_app_override,
         location_id=location_id,
         crop_id=crop_id,
         end_date=datetime.strptime(date_str, "%Y-%m-%d"),
@@ -82,9 +82,11 @@ def test_get_gdd_data_not_found(
     assert "GDD data not found" in response.json()["detail"]
 
 
-def test_get_gdd_data_invalid_date_format():
+def test_get_gdd_data_invalid_date_format(mock_s3_client_app_override):
     """Test request with an invalid date format (400)."""
     response = client.get(
+        # mock_s3_client_app_override is included to ensure S3 client is mocked,
+        # allowing the app to reach validation logic before any S3 interaction.
         "/gdd/?location_id=Test&crop_id=Test&date=2023/01/01"  # Invalid format.
     )
     assert response.status_code == 400
@@ -141,7 +143,9 @@ def test_get_gdd_data_runtime_error(mock_data_service, mock_s3_client_app_overri
         ("location_id=Belagavi&crop_id=maize"),  # Missing date.
     ],
 )
-def test_get_gdd_data_missing_parameters(query_params):
+def test_get_gdd_data_missing_parameters(query_params, mock_s3_client_app_override):
     """Test requests with missing required query parameters (422)."""
     response = client.get(f"/gdd/?{query_params}")
+    # mock_s3_client_app_override is included to ensure S3 client is mocked,
+    # allowing the app to reach validation logic before any S3 interaction.
     assert response.status_code == 422
