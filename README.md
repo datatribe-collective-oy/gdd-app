@@ -48,7 +48,8 @@ Navigate to the root directory of the project where `docker-compose.yaml` is loc
     This command builds the necessary Docker images and starts all services defined in `docker-compose.yaml` in detached mode (`-d`).
 
     ```bash
-    docker compose up --build -d
+    docker compose build
+    docker compose up -d
     ```
 
     The first run will take some time as it downloads base images, builds custom images, initializes Airflow, and sets up MinIO.
