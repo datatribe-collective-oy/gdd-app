@@ -58,7 +58,7 @@ async def get_weather_data(
             detail=f"Internal service error: {e}",
         )
     except ClientError as e:
-        # Catch S3 client errors and return a 503
+        # Catch S3 client errors and return a 503.
         logger.error(f"S3 ClientError in /weather endpoint: {e}")
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,

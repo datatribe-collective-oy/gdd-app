@@ -6,7 +6,7 @@ from datetime import datetime
 from botocore.exceptions import ClientError
 from botocore.client import BaseClient
 
-# 'api_service' and 'universal' are packages from the project root
+# 'api_service' and 'universal' are packages from the project root.
 from api_service.dependencies import get_s3_client_dependency
 from api_service.services import data_retrieval_service
 
