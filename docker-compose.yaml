@@ -113,6 +113,7 @@ services:
       - "8501:8501"
     environment:
       - API_BASE_URL=http://fastapi:8000
+      - STREAMLIT_SERVER_HEADLESS=true
     networks:
       - gdd_internal
     depends_on:
@@ -151,7 +152,6 @@ services:
       - airflow-webserver
     ports:
       - "80:80"
-      - "443:443"
     networks:
       - gdd_internal
 
