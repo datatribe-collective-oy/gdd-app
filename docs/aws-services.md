@@ -1,8 +1,6 @@
 # AWS Services
 
-## AWS Service Usage
-
-### Overview
+## Overview
 
 This document outlines the AWS services used by the GDD Timing System application. The infrastructure follows a secure-by-default approach with isolated networking, least-privilege access controls, and comprehensive logging. All infrastructure is defined as code using Terraform to ensure consistency and reproducibility.
 
