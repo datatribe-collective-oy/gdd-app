@@ -1,5 +1,6 @@
 import streamlit as st
 import os
+import pandas as pd 
 import requests
 from urllib.parse import urljoin, urlencode
 from typing import Dict, Any, Optional
@@ -87,8 +88,8 @@ if st.button("Get Weather Data"):
     }
     weather_data = fetch_data_from_api("/weather/", weather_params)
     if weather_data:
-        st.json(weather_data)
-        # st.dataframe(pd.DataFrame(weather_data)) # Optionally display as a table.
+        #st.json(weather_data)
+        st.dataframe(pd.DataFrame(weather_data))
 
 st.header("Fetch GDD Data")
 location_id_gdd = st.text_input("Location ID (GDD)", "Belagavi")
@@ -105,5 +106,5 @@ if st.button("Get GDD Data"):
     }
     gdd_data = fetch_data_from_api("/gdd/", gdd_params)
     if gdd_data:
-        st.json(gdd_data)
-        # st.dataframe(pd.DataFrame(gdd_data)) # Optionally display as a table.
+        #st.json(gdd_data)
+        st.dataframe(pd.DataFrame(gdd_data))

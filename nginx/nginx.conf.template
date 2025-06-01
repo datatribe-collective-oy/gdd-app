@@ -1,19 +1,27 @@
 server {
     listen 80;
     server_name _;
-    return 301 https://$host$request_uri;
-}
-server {
-    listen 443 ssl;
-    server_name _;
-
-    ssl_certificate /etc/ssl/certs/gdd_selfsigned.crt;
-    ssl_certificate_key /etc/ssl/private/gdd_selfsigned.key;
+    # server_name localhost;
 
     location / {
         proxy_pass http://streamlit:8501/;
+        proxy_http_version 1.1; # Explicitly use HTTP/1.1 for upstream
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
+        # WebSocket support
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+
+        # Increase timeouts for WebSocket connections
+        proxy_read_timeout 100s; 
+        proxy_send_timeout 100s;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Cache control for static files
+        add_header Cache-Control 'no-cache, no-store, must-revalidate, proxy-revalidate';
+        add_header Pragma 'no-cache'; # HTTP/1.0 backward compatibility
+        add_header Expires '0'; # Proxies
     }
 
     location /api/ {
@@ -23,6 +31,8 @@ server {
         proxy_set_header Connection "upgrade";
         proxy_http_version 1.1;
         proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
     }
 
     location /airflow/ {
