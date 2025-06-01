@@ -4,7 +4,7 @@ FROM python:3.11-slim
 # Working directory..
 WORKDIR /app
 
-# Copy project necessary source files installation..
+# Copy project necessary source files installation.
 COPY pyproject.toml ./
 COPY README.md ./
 COPY universal ./universal/
@@ -15,11 +15,20 @@ COPY gdd_counter ./gdd_counter/
 # Install the package and its dependencies.
 RUN pip install --no-cache-dir .
 
+# Create a non-privileged user and group
+RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
+
 # Copy the API.
 COPY api_service/ /app/api_service/
 
+# Ensure the app directory is owned by the new user
+RUN chown -R appuser:appuser /app
+
 # Expose FastAPI default port for uvicorn.
 EXPOSE 8000
+
+# Switch to the non-privileged user
+USER appuser
 
 # Run FastAPI API with uvicorn.
 CMD ["uvicorn", "api_service.main:app", "--host", "0.0.0.0", "--port", "8000"]

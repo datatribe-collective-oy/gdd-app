@@ -12,7 +12,16 @@ COPY gdd_counter ./gdd_counter/
 
 RUN pip install --no-cache-dir .
 
+# Create a non-privileged user and group
+RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
+
+# Ensure the app directory is owned by the new user
+RUN chown -R appuser:appuser /app
+
 # Expose default port for Streamlit.
 EXPOSE 8501
+
+# Switch to the non-privileged user
+USER appuser
 
 CMD ["streamlit", "run", "scripts/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
