@@ -42,21 +42,19 @@ The application layer focuses on securing the services running within the system
 - **Nginx Reverse Proxy:** Nginx acts as a security boundary, providing an additional layer between external traffic and the API service by enforcing access control and securing communication between services. For example:
   - Admin interfaces (e.g., Airflow, MinIO Console) are restricted to specific IPs using `NGINX_ALLOWED_ADMIN_IP_1` and `NGINX_ALLOWED_ADMIN_IP_2`.
   - WebSocket connections are explicitly supported and secured.
-### API Security
+  ### API Security
 
-The FastAPI application implements several security measures:
+  The FastAPI application implements several security measures:
 
-- **Input Validation:** API endpoints validate input data using FastAPI's Query parameters with type checking and validation rules to prevent injection attacks and ensure data integrity.
-- **Error Handling:** Comprehensive error handling with appropriate HTTP status codes (400, 404, 500) ensures proper client feedback without exposing internal system details.
-- **Structured Logging:** API operations and errors are logged with contextual information for diagnostic and audit purposes, capturing:
-  - Error conditions with full stack traces
-  - Request processing information
-  - S3/MinIO connection issues
-  - Data processing errors
-- **Service Isolation:** The API service runs in its own Docker container, isolated from other components to minimize the impact of potential vulnerabilities.
-- **Controlled Data Access:** API endpoints access data from the object storage (S3/MinIO) using carefully scoped permissions.
-
-The API security is further enhanced by the infrastructure:
+  - **Input Validation:** API endpoints validate input data using FastAPI's Query parameters with type checking and validation rules to prevent injection attacks and ensure data integrity.
+  - **Error Handling:** Comprehensive error handling with appropriate HTTP status codes (400, 404, 500) ensures proper client feedback without exposing internal system details.
+  - **Structured Logging:** API operations and errors are logged with contextual information for diagnostic and audit purposes, capturing:
+    - Error conditions with full stack traces.
+    - Request processing information.
+    - S3/MinIO connection issues.
+    - Data processing errors.
+  - **Service Isolation:** The API service runs in its own Docker container, isolated from other components to minimize the impact of potential vulnerabilities.
+  - **Controlled Data Access:** API endpoints access data from the object storage (S3/MinIO) using carefully scoped permissions.
 
 
 ## Layer 4: Data Security
@@ -73,15 +71,15 @@ The innermost layer focuses on securing data storage and access:
 ## Additional Security Measures
 
 - **Monitoring and Logging:**
-  - **Infrastructure Logging:** AWS CloudTrail tracks API calls and changes to the AWS environment
+  - **Infrastructure Logging:** AWS CloudTrail tracks API calls and changes to the AWS environment.
   - **Application Logging:**
-    - Terraform user data script output is logged to `/var/log/user-data.log` and system journal
-    - Docker container logs are accessible via `docker-compose logs`
-    - All bootstrap operations are logged with timestamps
+    - Terraform user data script output is logged to `/var/log/user-data.log` and system journal.
+    - Docker container logs are accessible via `docker-compose logs`.
+    - All bootstrap operations are logged with timestamps.
   - **Planned CloudWatch Integration:**
-    - AWS CloudWatch will be configured for EC2 instance monitoring
-    - Docker container logs will be forwarded to CloudWatch Logs
-    - User data script logs will be streamed to CloudWatch Logs using CloudWatch agent where possible
+    - AWS CloudWatch will be configured for EC2 instance monitoring.
+    - Docker container logs will be forwarded to CloudWatch Logs.
+    - User data script logs will be streamed to CloudWatch Logs using CloudWatch agent where possible.
 - **Health Checks:** Services are monitored using health checks to ensure availability and detect anomalies.
 - **Dependency Management:** Terraform ensures that all dependencies (e.g., AWS resources) are managed securely and consistently.
 - **IAM Policies:** All policies adhere to the principle of least privilege, with IAM roles and permissions managed separately from infrastructure code.
@@ -103,11 +101,11 @@ The ASVS framework should be consulted during security reviews and when implemen
 
 For more information on specific aspects of the architecture, refer to the following documentation:
 
-- [AWS Services](./aws-services.md) - Details on AWS infrastructure and IAM configurations
-- [Containerisation](./containerisation.md) - Information on Docker container security and isolation
-- [Reverse Proxy](./reverse-proxy.md) - Details on Nginx configuration and access controls
-- [API Documentation](./api-documentation.md) - API endpoint specifications and usage
-- [System Architecture](./system-architecture.md) - Overall system design and component interactions
-- [Data Flow and Modeling](./data-flow-and-modeling.md) - Information on data processing and storage
+- [AWS Services](./aws-services.md) - Details on AWS infrastructure and IAM configurations.
+- [Containerisation](./containerisation.md) - Information on Docker container security and isolation.
+- [Reverse Proxy](./reverse-proxy.md) - Details on Nginx configuration and access controls.
+- [API Documentation](./api-documentation.md) - API endpoint specifications and usage.
+- [System Architecture](./system-architecture.md) - Overall system design and component interactions.
+- [Data Flow and Modeling](./data-flow-and-modeling.md) - Information on data processing and storage.
 
 These documents provide further context and detail on implementation throughout the system.
