@@ -1,8 +1,9 @@
 # Security Architecture
 
+## Overview
+
 The security architecture for the GDD Timing System is designed using the Onion Layer Model, where each layer represents a distinct level of security. This layered approach ensures that the system is robust, resilient, and capable of mitigating risks. Below is an explanation of the layers, starting from the outermost layer.
 
----
 
 ## Layer 1: Network Security
 
@@ -14,9 +15,9 @@ The outermost layer focuses on securing the network infrastructure. This include
 - **Route Tables:** Custom route tables ensure that traffic is routed securely within the VPC.
 - **Security Groups:** Security groups act as virtual firewalls, controlling inbound and outbound traffic. For example:
   - HTTP access is currently allowed from any IP, with security implemented at the application level through Nginx.
-  - SSH access is limited to trusted IPs defined in `var.ssh_allowed_ips`.
+- **SSH Access:** SSH keys for EC2 access are managed securely without hardcoding sensitive information in the configuration. SSH access is limited to trusted IPs defined in `var.ssh_allowed_ips`.
 
----
+
 
 ## Layer 2: Compute Security
 
@@ -30,19 +31,33 @@ This layer secures the compute resources, primarily the EC2 instances:
   - Fetch secrets securely from AWS Systems Manager Parameter Store.
   - Ensure sensitive files (e.g., `.env`) are shredded after use.
 
----
+
 
 ## Layer 3: Application Security
 
 The application layer focuses on securing the services running within the system:
 
-- **Dockerized Services:** All services (e.g., FastAPI, Streamlit, Airflow) are containerized using Docker, ensuring isolation and consistency.
+- **Dockerized Services:** All services (e.g., FastAPI, Streamlit, Airflow) are containerized using Docker, ensuring isolation and consistency. Services communicate via an internal Docker network that's not directly accessible from outside.
 - **Environment Variables:** Sensitive data (e.g., database credentials, API keys) is passed securely via environment variables.
-- **Nginx Reverse Proxy:** Nginx acts as a reverse proxy, enforcing access control and securing communication between services. For example:
+- **Nginx Reverse Proxy:** Nginx acts as a security boundary, providing an additional layer between external traffic and the API service by enforcing access control and securing communication between services. For example:
   - Admin interfaces (e.g., Airflow, MinIO Console) are restricted to specific IPs using `NGINX_ALLOWED_ADMIN_IP_1` and `NGINX_ALLOWED_ADMIN_IP_2`.
   - WebSocket connections are explicitly supported and secured.
+### API Security
 
----
+The FastAPI application implements several security measures:
+
+- **Input Validation:** API endpoints validate input data using FastAPI's Query parameters with type checking and validation rules to prevent injection attacks and ensure data integrity.
+- **Error Handling:** Comprehensive error handling with appropriate HTTP status codes (400, 404, 500) ensures proper client feedback without exposing internal system details.
+- **Structured Logging:** API operations and errors are logged with contextual information for diagnostic and audit purposes, capturing:
+  - Error conditions with full stack traces
+  - Request processing information
+  - S3/MinIO connection issues
+  - Data processing errors
+- **Service Isolation:** The API service runs in its own Docker container, isolated from other components to minimize the impact of potential vulnerabilities.
+- **Controlled Data Access:** API endpoints access data from the object storage (S3/MinIO) using carefully scoped permissions.
+
+The API security is further enhanced by the infrastructure:
+
 
 ## Layer 4: Data Security
 
@@ -54,7 +69,6 @@ The innermost layer focuses on securing data storage and access:
 - **MinIO:** MinIO is used as an object storage solution primarily for local development, with access credentials secured and managed through environment variables. The infrastructure includes commented provisions for MinIO in production if needed as an alternative.
 - **Database Security:** PostgreSQL is configured with username/password authentication, with credentials managed through environment variables. Data persistence is handled through Docker volumes, with network isolation provided by the container networking configuration. The PostgreSQL instance is used primarily for storing Airflow metadata only, not application data, which minimizes the risk profile of the database.
 
----
 
 ## Additional Security Measures
 
@@ -71,26 +85,7 @@ The innermost layer focuses on securing data storage and access:
 - **Health Checks:** Services are monitored using health checks to ensure availability and detect anomalies.
 - **Dependency Management:** Terraform ensures that all dependencies (e.g., AWS resources) are managed securely and consistently.
 - **IAM Policies:** All policies adhere to the principle of least privilege, with IAM roles and permissions managed separately from infrastructure code.
-- **SSH Key Management:** SSH keys for EC2 access are managed securely without hardcoding sensitive information in the configuration.
 
-## API Security
-
-The FastAPI application implements several security measures:
-
-- **Input Validation:** All API endpoints validate input data using FastAPI's Query parameters with type checking and validation rules to prevent injection attacks and ensure data integrity.
-- **Error Handling:** Comprehensive error handling with appropriate HTTP status codes (400, 404, 500) ensures proper client feedback without exposing internal system details.
-- **Structured Logging:** API operations and errors are logged with contextual information for diagnostic and audit purposes, capturing:
-  - Error conditions with full stack traces
-  - Request processing information
-  - S3/MinIO connection issues
-  - Data processing errors
-- **Service Isolation:** The API service runs in its own Docker container, isolated from other components to minimize the impact of potential vulnerabilities.
-- **Controlled Data Access:** API endpoints access data from the object storage (S3/MinIO) using carefully scoped permissions.
-
-The API security is further enhanced by the infrastructure:
-
-- **Reverse Proxy Protection:** Nginx acts as a security boundary, providing an additional layer between external traffic and the API service.
-- **Docker Network Isolation:** Services communicate via an internal Docker network that's not directly accessible from outside.
 
 ## Security Standards and Compliance
 
