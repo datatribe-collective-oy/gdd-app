@@ -93,9 +93,18 @@ Tests are integrated into the CI/CD pipeline:
   - Test coverage reporting will be implemented.
   - Performance testing for critical endpoints will be introduced.
 
-## Running Tests
+## Related Documentation
 
-- **Unit tests**: `poetry run pytest tests/unit`
-- **Integration tests**: `poetry run pytest tests/integration` (planned)
-- **All tests**: `poetry run pytest` (runs both unit and integration tests)
-- **With coverage**: `poetry run pytest --cov=api_service tests/`
+For more information on specific aspects of the architecture, refer to the following documentation:
+
+- [System Architecture](./system-architecture.md) - Overall system design and component interactions.
+- [Data Flow and Modeling](./data-flow-and-modeling.md) - Information on data processing and storage.
+- [API Documentation](./api-documentation.md) - API endpoint specifications and usage.
+- [Yr.no API Compliance](./yrno-api-compliance.md) - Compliance with the Yr.no Weather API terms of service.
+- [AWS Services](./aws-services.md) - Details on AWS infrastructure and IAM configurations.
+- [Containerisation](./containerisation.md) - Information on Docker container security and isolation.
+- [Reverse Proxy](./reverse-proxy.md) - Details on Nginx configuration and access controls.
+- [Security Architecture](./security-architecture.md) - Overview of the security measures and design.
+- [Testing Plan](./testing-plan.md) - Outline of the testing strategy, including security testing.
+
+These documents provide further context and detail on implementation throughout the system.

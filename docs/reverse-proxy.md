@@ -130,3 +130,19 @@ CMD ["envsubst '$$NGINX_ALLOWED_ADMIN_IP_1 $$NGINX_ALLOWED_ADMIN_IP_2' \
 - At container startup, `envsubst` replaces the placeholders `$$NGINX_ALLOWED_ADMIN_IP_1` and `$$NGINX_ALLOWED_ADMIN_IP_2` in `nginx.conf.template` with values from the environment variables `NGINX_ALLOWED_ADMIN_IP_1` and `NGINX_ALLOWED_ADMIN_IP_2`.
 - The resulting configuration is written to `/etc/nginx/conf.d/default.conf`, which Nginx then loads.
 - This allows for flexible IP whitelisting for administrative interfaces (Airflow, MinIO) without modifying the core Nginx configuration template directly. These environment variables are set in the `docker-compose.yaml` file and values are sourced from an `.env` file.
+
+## Related Documentation
+
+For more information on specific aspects of the architecture, refer to the following documentation:
+
+- [System Architecture](./system-architecture.md) - Overall system design and component interactions.
+- [Data Flow and Modeling](./data-flow-and-modeling.md) - Information on data processing and storage.
+- [API Documentation](./api-documentation.md) - API endpoint specifications and usage.
+- [Yr.no API Compliance](./yrno-api-compliance.md) - Compliance with the Yr.no Weather API terms of service.
+- [AWS Services](./aws-services.md) - Details on AWS infrastructure and IAM configurations.
+- [Containerisation](./containerisation.md) - Information on Docker container security and isolation.
+- [Reverse Proxy](./reverse-proxy.md) - Details on Nginx configuration and access controls.
+- [Security Architecture](./security-architecture.md) - Overview of the security measures and design.
+- [Testing Plan](./testing-plan.md) - Outline of the testing strategy, including security testing.
+
+These documents provide further context and detail on implementation throughout the system.
