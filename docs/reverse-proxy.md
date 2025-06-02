@@ -4,7 +4,7 @@ This document outlines the Nginx configuration used as a reverse proxy for the G
 
 ## Configuration File: `nginx.conf.template`
 
-The primary Nginx configuration is managed through a template file located at `nginx/nginx.conf.template`. This template is processed at container startup to inject environment-specific variables (like allowed IP addresses).
+The primary Nginx configuration is managed through a template file located at `nginx/nginx.conf.template`. This template is processed at container startup to inject environment-specific variables, such as like allowed IP addresses.
 
 ### Server Block
 
@@ -43,7 +43,7 @@ This block routes traffic to the Streamlit frontend application.
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
 
-        # Cache control for static files
+        # Cache control headers
         add_header Cache-Control 'no-cache, no-store, must-revalidate, proxy-revalidate';
         add_header Pragma 'no-cache'; # HTTP/1.0 backward compatibility
         add_header Expires '0'; # Proxies
@@ -111,7 +111,7 @@ This block routes traffic to the MinIO web console, also with IP-based access co
 
 - **Access Control**: Similar IP whitelisting as for Airflow.
 - **`proxy_pass http://minio:9001/;`**: Forwards requests to the MinIO console.
-- **`proxy_set_header X-Minio-Original-Host $http_host;`**: This header ensures that MinIO correctly identifies the original host requested by the client. When MinIO is accessed via a reverse proxy, it needs this header to properly handle requests and generate URLs that match the original host, avoiding issues with incorrect redirects or resource links.
+- **`proxy_set_header X-Minio-Original-Host $http_host;`**: This header ensures that MinIO correctly identifies the original host requested by the client. When MinIO is accessed via a reverse proxy, it requires this header to properly handle requests and generate URLs that match the original host, avoiding issues with incorrect redirects or resource links.
 
 ## Dynamic Configuration with `Dockerfile.nginx`
 

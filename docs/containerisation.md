@@ -10,11 +10,11 @@ The application is composed of the following containers:
 
 1. **NGINX** - Reverse proxy and web server
 2. **FastAPI** - Backend API service
-3. **Streamlit** - Frontend user interface.
-4. **Airflow** - Workflow orchestration for data processing.
+3. **Streamlit** - Frontend user interface
+4. **Airflow** - Workflow orchestration for data processing
 5. **MinIO** - S3-compatible object storage service (included in the local `docker-compose` setup)
 
-All containers are defined in individual Dockerfiles and orchestrated using Docker Compose.
+Most of these containers are defined in individual Dockerfiles, and all are managed and orchestrated using Docker Compose.
 
 ## Container Details
 
@@ -25,24 +25,23 @@ All containers are defined in individual Dockerfiles and orchestrated using Dock
 **Purpose**:
 
 - Acts as a reverse proxy for all services.
-- Handles SSL termination.
 - Controls access to admin interfaces.
 
 **Key Features**:
 
 - Based on nginx:1.28.
-- Generates self-signed SSL certificates for development environments.
 - Uses environment variable substitution for IP-based access control.
 - Routes traffic to the appropriate service based on URL path.
 
 **Configuration**:
 
 - Main config template: `nginx/nginx.conf.template`.
+- NGINX listens on port **80** (default HTTP) and proxies requests to backend services.
 - Routes:
-  - `/` → Streamlit UI (port 8501).
-  - `/api/` → FastAPI backend (port 8000).
-  - `/airflow/` → Airflow webserver (port 8080) - IP restricted
-  - `/minio-console/` → MinIO console (port 9001) - IP restricted
+  - `/` → Streamlit UI (proxied to port 8501).
+  - `/api/` → FastAPI backend (proxied to port 8000).
+  - `/airflow/` → Airflow webserver (proxied to port 8080) - IP restricted.
+  - `/minio-console/` → MinIO console (proxied to port 9001) - IP restricted.
 
 ### FastAPI Container
 
@@ -85,7 +84,6 @@ All containers are defined in individual Dockerfiles and orchestrated using Dock
 **Components**:
 
 - Main Streamlit app: `/app/scripts/streamlit_app.py`.
-- Shared modules for data processing and calculation.
 
 ### Airflow Container
 
@@ -94,24 +92,50 @@ All containers are defined in individual Dockerfiles and orchestrated using Dock
 **Purpose**:
 
 - Orchestrates data fetching and processing workflows.
-- Schedules periodic data updates.
-- Manages the ETL pipeline.
+- Manages and logs the ETL pipeline runs.
 
 **Key Features**:
 
 - Based on apache/airflow:2.8.2-python3.11.
-- Includes make for build processes.
 - Installs the application and its dependencies from pyproject.toml.
 
 **Components**:
 
 - DAG definitions in `/opt/airflow/dags/`.
 - Initialization script: `init-airflow.sh`.
-- Makefile for common operations.
+- Makefile for aiding common operations in DAG orchestration.
+
+### MinIO Container
+
+**Image**: `minio/minio:RELEASE.2025-05-24T17-08-30Z`
+
+**Purpose**:
+
+- Provides an S3-compatible object storage service.
+- Used locally for storing raw weather data fetched by Airflow DAGs.
+
+**Key Features**:
+
+- Exposes port 9000 for the S3 API and port 9001 for the MinIO web console.
+- Data is persisted in the `minio_data` Docker volume, mounted at `/data` inside the container.
+- Configured with user credentials and a default bucket via environment variables.
+- Includes a healthcheck to ensure the service is ready before dependent services start.
+
+**Configuration (from `docker-compose.yaml`):**
+
+- **Ports**:
+    - API: `${MINIO_API_PORT_E:-9000}` (host) to `9000` (container)
+    - Console: `${MINIO_CONSOLE_PORT_E:-9001}` (host) to `9001` (container)
+- **Environment Variables**:
+    - `MINIO_ROOT_USER`: Populated by the `${MINIO_ACCESS_KEY}` environment variable; serves as the access key for MinIO.
+    - `MINIO_ROOT_PASSWORD`: Populated by the `${MINIO_SECRET_KEY}` environment variable; serves as the secret key for MinIO.
+    - `MINIO_DEFAULT_BUCKETS`: Populated by the `${MINIO_DATA_BUCKET_NAME}` environment variable; specifies the bucket to be used for storing data.
+- **Command**: `server /data --console-address ":9001"` - Starts the MinIO server, serving data from the `/data` directory and making the console available on port 9001.
+- **Healthcheck**: Uses `mc ready local` to verify service availability.
 
 ## Environment Variables
 
-The containers rely on environment variables for configuration, which are typically provided through Docker Compose:
+The containers rely on environment variables for configuration, which provided through Docker Compose:
 
 - `NGINX_ALLOWED_ADMIN_IP_1`, `NGINX_ALLOWED_ADMIN_IP_2`: IP addresses allowed to access admin interfaces.
 - Database credentials (for PostgreSQL).
@@ -140,26 +164,22 @@ Services like `airflow-init`, `airflow-webserver`, and `airflow-scheduler` have 
 ## Security Considerations
 
 - Admin interfaces (Airflow, MinIO) are IP-restricted through NGINX configuration.
-- HTTPS is enforced with SSL certificates.
 - Application containers (FastAPI, Streamlit, Airflow) and service containers (PostgreSQL, MinIO) run as non-root users. The NGINX master process runs as root as required, while worker processes run with lower privileges.
 - The application's code and dependencies are installed from known sources.
-- Minimized attack surface: Dockerfiles are structured to copy only necessary files into the images.
+- Minimized attack surface: Dockerfiles are structured to copy only necessary files into the images, but more optimisation development can be done to further reduce the image size and attack surface.
 - Principle of Least Privilege: Efforts are made to ensure containers operate with only the permissions necessary for their function. This includes running processes as non-root users and isolating network traffic.
 
 ## Development vs. Production
 
 In development:
 
-- Self-signed certificates are used for HTTPS.
-- All containers typically run on a single host.
+- All containers run on a single host.
 - Volume mounts are used for rapid development.
 
 In production:
 
-- Proper SSL certificates should be used.
-- Container resource limits should be set..
-- Secrets should be managed securely through AWS Parameter Store.
-- Database backups should be configured.
+- Secrets are being managed securely through AWS Parameter Store.
+- Container resource limits should be set.
 
 ## Related Documentation
 

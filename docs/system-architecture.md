@@ -1,19 +1,20 @@
 # System Architecture & Data Flow
+
 This document outlines the system architecture for the farmer's assistant application.
 
 ## Overview
 
-| Component        | Role                                                                 |
-|------------------|----------------------------------------------------------------------|
-| FastAPI          | Backend API to serve weather and GDD data                            |
-| Streamlit        | Frontend dashboard for farmers to visualize GDD                      |
-| Airflow          | Orchestration tool to schedule and run data ingestion pipelines      |
-| DuckDB           | Lightweight embedded database to store and query gdd data            |
-| S3 (AWS)         | Cloud storage to store and query exctracted raw weather data         |
-| NGINX            | Reverse proxy to route traffic between frontend and backend          |
-| Docker           | Containerization for modular, isolated components                    |
-| EC2 (AWS)        | Cloud VM hosting the full application stack                          |
-| Terraform        | Infrastructure-as-code tool to provision AWS resources               |
+| Component | Role                                                            |
+| --------- | --------------------------------------------------------------- |
+| FastAPI   | Backend API to serve weather and GDD data                       |
+| Streamlit | Frontend dashboard for farmers to visualize GDD                 |
+| Airflow   | Orchestration tool to schedule and run data ingestion pipelines |
+| DuckDB    | Lightweight embedded database to store and query gdd data       |
+| S3 (AWS)  | Cloud storage to store and query exctracted raw weather data    |
+| NGINX     | Reverse proxy to route traffic between frontend and backend     |
+| Docker    | Containerization for modular, isolated components               |
+| EC2 (AWS) | Cloud VM hosting the full application stack                     |
+| Terraform | Infrastructure-as-code tool to provision AWS resources          |
 
 ## Data Flow
 
@@ -56,7 +57,6 @@ This document outlines the system architecture for the farmer's assistant applic
             │   Client     │
             └──────────────┘
 
-
 ## API Usage (Yr.no)
 
 - [Yr.no](https://developer.yr.no/) for developers.
@@ -84,8 +84,8 @@ This document outlines the system architecture for the farmer's assistant applic
   - Hides internal ports
   - Acts as a security and routing gateway
   - Can be upgraded to a **load balancer** if scaling is needed
-  <br><br>
-  <img src="./images/1-architechture-and-flow.png" width="500" />
+    <br><br>
+    <img src="./images/1-architechture-and-flow.png" width="500" />
 
 ## Tech Stack
 
@@ -103,4 +103,4 @@ This document outlines the system architecture for the farmer's assistant applic
 
 ## Notes
 
-> NGINX  hides infrastructure complexity and only exposes the necessary interfaces to the user.
+> NGINX hides infrastructure complexity and only exposes the necessary interfaces to the user.

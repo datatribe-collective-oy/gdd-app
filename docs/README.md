@@ -6,8 +6,7 @@ Welcome to the GDD App project documentation. This collection of documents provi
 
 - **Overview & Architecture**
 
-  - [System Architecture](./system-architecture.md) - An overview of system architechture and its components.
-
+  - [System Architecture](./system-architecture.md) - An overview of system architecture and its components.
   - [Data Flow and Modeling](./data-flow-and-modeling.md) - Details on how data moves through the system and its structure.
 
 - **Development & API**
@@ -19,12 +18,14 @@ Welcome to the GDD App project documentation. This collection of documents provi
 
   - [AWS Services](./aws-services.md) - Overview of AWS services utilized by the project.
   - [Containerisation](./containerisation.md) - Information on Docker and container orchestration.
+  - [Reverse Proxy](./reverse-proxy.md) - Details on Nginx configuration and routing.
 
 - **Security**
 
   - [Security Architecture](./security-architecture.md) - Overview of the security measures and design.
 
 - **Quality Assurance**
+
   - [Testing Plan](./testing-plan.md) - Outline of the testing strategy, types of tests, and processes.
 
 Please refer to the respective documents for detailed information on each topic.

@@ -21,7 +21,7 @@ The API endpoints are grouped into the following categories:
 
 ### Diagnostic Endpoints (`/`)
 
-These endpoints are primarily for checking the API's status, and simulation of testing error responses.
+As for now these endpoints are primarily for checking the API's status, and simulation of testing error responses.
 
 #### Root Endpoint
 
@@ -84,7 +84,7 @@ Endpoints for retrieving weather data.
 #### Get Weather Data
 
 *   **GET `/weather/`**
-    *   **Description:** Retrieves weather data for a location and crop for the 7-day period ending on the specified date. Data for the specified date and the six preceding days will be returned. Prequisite: weather data must be available for the specified period in the storage system.
+    *   **Description:** Retrieves weather data for a location and crop for the 7-day period ending on the specified date. Data for the specified date and the six preceding days will be returned. Prequisite: weather data must be available for the specified period in the storage system. 
     *   **Parameters (Query):**
         *   `location_id` (string, **required**): Identifier for the location.
         *   `crop_id` (string, **required**): Identifier for the crop associated with the weather data.

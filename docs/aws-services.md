@@ -4,7 +4,7 @@
 
 This document outlines the AWS services used by the GDD Timing System application. The infrastructure follows a secure-by-default approach with isolated networking, least-privilege access controls, and comprehensive logging. All infrastructure is defined as code using Terraform to ensure consistency and reproducibility.
 
-The project leverages several AWS services to host and manage the application. These services are mostly provisioned and managed using Terraform, as defined in the [terraform/main.tf](terraform/main.tf) file.
+The project leverages several AWS services to host and manage the application. These services are mostly provisioned and managed using Terraform, as defined in the [terraform/main.tf](../terraform/main.tf) file.
 
 
 ### 1. Amazon EC2 (Elastic Compute Cloud)
@@ -12,18 +12,18 @@ The project leverages several AWS services to host and manage the application. T
 - **Resource:** `aws_instance.gdd_server`
 - **Purpose:** An EC2 instance is provisioned to serve as the primary server for the application. It hosts the Docker containers for NGINX, FastAPI, Streamlit, and Airflow.
 - **Details:**
-  - The instance type is `t3.micro` (defined in [`aws_instance.gdd_server`](terraform/main.tf)).
-  - It uses an Amazon Linux 2023 AMI (AMI ID: `ami-0dd574ef87b79ac6c` defined in [`aws_instance.gdd_server`](terraform/main.tf)).
-  - User data script, [terraform/user_data/ec2-docker.sh](terraform/user_data/ec2-docker.sh), is used to bootstrap the instance, primarily for installing Docker and Docker Compose.
-  - An SSH key pair ([`aws_key_pair.gdd_key`](terraform/main.tf)) is associated with the instance for secure access.
+  - The instance type is `t3.micro` (defined in [`aws_instance.gdd_server`](../terraform/main.tf)).
+  - It uses an Amazon Linux 2023 AMI (AMI ID: `ami-0dd574ef87b79ac6c` defined in [`aws_instance.gdd_server`](../terraform/main.tf)).
+  - User data script, [terraform/user_data/ec2-docker.sh](../terraform/user_data/ec2-docker.sh), is used to bootstrap the instance, primarily for installing Docker and Docker Compose.
+  - An SSH key pair ([`aws_key_pair.gdd_key`](../terraform/main.tf)) is associated with the instance with IP-whitelisting enabled for secure access.
 
 ### 2. Amazon S3 (Simple Storage Service)
 
 - **Resource:** `aws_s3_bucket.gdd_raw_data`
 - **Purpose:** An S3 bucket is used for storing raw weather data fetched by the Airflow DAGs. This data is then processed and used by the application.
 - **Details:**
-  - The bucket is named `gdd-raw-weather-data` (defined in [`aws_s3_bucket.gdd_raw_data`](terraform/main.tf)).
-  - Public access to the bucket is blocked via [`aws_s3_bucket_public_access_block.gdd_raw_data_block`](terraform/main.tf) to ensure data privacy.
+  - The bucket is named `gdd-raw-weather-data` (defined in [`aws_s3_bucket.gdd_raw_data`](../terraform/main.tf)).
+  - Public access to the bucket is blocked via [`aws_s3_bucket_public_access_block.gdd_raw_data_block`](../terraform/main.tf) to ensure data privacy.
 
 ### 3. Amazon VPC (Virtual Private Cloud)
 
@@ -47,15 +47,15 @@ The project leverages several AWS services to host and manage the application. T
 - **Details:**
   - **Ingress Rules:** Allows inbound traffic on:
     - Port 80 (HTTP) from anywhere (`0.0.0.0/0`).
-    - Port 443 (HTTPS) from anywhere (`0.0.0.0/0`).
     - Port 22 (SSH) from specified IP addresses (defined by the `ssh_allowed_ips` variable in your Terraform configuration).
   - **Egress Rules:** Allows all outbound traffic.
 
 ### 6. Security Considerations
 
-- **CloudTrail Logging:** AWS CloudTrail logging is configured to track API calls and changes made to the AWS environment.
+
 - **Logging and Monitoring:**
-  - **Current Logging:**
+  - **Infrastructure Logging:** AWS CloudTrail is logging to track API calls and changes made to the AWS environment by the Terraform.
+  - **Application Logging:**
     - Terraform user data script output is logged to `/var/log/user-data.log` and system journal.
     - Docker compose container logs are available via `docker-compose logs`.
     - All bootstrap operations are logged with timestamps via `set -x`.
@@ -69,4 +69,4 @@ The project leverages several AWS services to host and manage the application. T
 - **SSH Key Management:** The SSH key pair used for accessing the EC2 instance is managed separately, ensuring secure access to the instance without hardcoding sensitive information in the Terraform configuration.
 - **Terraform Scope:** The Terraform configuration focuses on provisioning the core infrastructure (VPC, EC2, S3, etc.) and does not manage IAM users, roles, or policies directly, separating infrastructure concerns from identity and access management.
 
-As detailed in [docs/system-architecture.md](docs/system-architecture.md), NGINX, running on the EC2 instance, manages external access to the different application services.
+As detailed in [docs/system-architecture.md](../docs/system-architecture.md), NGINX, running on the EC2 instance, manages external access to the different application services.
