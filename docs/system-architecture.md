@@ -9,7 +9,7 @@ This document outlines the system architecture for the farmer's assistant applic
 | FastAPI   | Backend API to serve weather and GDD data                       |
 | Streamlit | Frontend dashboard for farmers to visualize GDD                 |
 | Airflow   | Orchestration tool to schedule and run data ingestion pipelines |
-| DuckDB    | Lightweight embedded database to store and query gdd data       |
+| DuckDB    | Lightweight embedded database to query gdd data       |
 | S3 (AWS)  | Cloud storage to store and query exctracted raw weather data    |
 | NGINX     | Reverse proxy to route traffic between frontend and backend     |
 | Docker    | Containerization for modular, isolated components               |

@@ -1,5 +1,6 @@
 # API Documentation
 
+## Overview
 
 This document provides an overview and details of the GDD App Data API endpoints. The API is built using FastAPI and serves weather and Growing Degree Day (GDD) data.
 

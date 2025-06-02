@@ -1,5 +1,7 @@
 # Yr.no API Compliance
 
+## Overview
+
 This document outlines how the GDD App adheres to the [Terms of Service for the Yr.no Weather API](https://developer.yr.no/doc/TermsOfService/).
 
 ## 1. Identification

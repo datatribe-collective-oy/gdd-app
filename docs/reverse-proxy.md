@@ -1,5 +1,7 @@
 # Nginx
 
+## Overview
+
 This document outlines the Nginx configuration used as a reverse proxy for the GDD (Growing Degree Days) application stack. Nginx listens for incoming HTTP traffic and routes it to the appropriate backend services: Streamlit, FastAPI, Airflow, and MinIO.
 
 ## Configuration File: `nginx.conf.template`

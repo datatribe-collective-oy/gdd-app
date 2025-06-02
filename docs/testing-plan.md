@@ -1,5 +1,7 @@
 # Testing Plan
 
+## Overview
+
 This document outlines the testing strategy for the GDD Timing System application, covering unit tests, integration tests, and CI/CD workflows.
 
 ## Testing Philosophy

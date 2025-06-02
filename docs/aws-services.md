@@ -7,7 +7,7 @@ This document outlines the AWS services used by the GDD Timing System applicatio
 The project leverages several AWS services to host and manage the application. These services are mostly provisioned and managed using Terraform, as defined in the [terraform/main.tf](../terraform/main.tf) file.
 
 
-### 1. Amazon EC2 (Elastic Compute Cloud)
+## Amazon EC2 (Elastic Compute Cloud)
 
 - **Resource:** `aws_instance.gdd_server`
 - **Purpose:** An EC2 instance is provisioned to serve as the primary server for the application. It hosts the Docker containers for NGINX, FastAPI, Streamlit, and Airflow.
@@ -17,7 +17,7 @@ The project leverages several AWS services to host and manage the application. T
   - User data script, [terraform/user_data/ec2-docker.sh](../terraform/user_data/ec2-docker.sh), is used to bootstrap the instance, primarily for installing Docker and Docker Compose.
   - An SSH key pair ([`aws_key_pair.gdd_key`](../terraform/main.tf)) is associated with the instance with IP-whitelisting enabled for secure access.
 
-### 2. Amazon S3 (Simple Storage Service)
+## Amazon S3 (Simple Storage Service)
 
 - **Resource:** `aws_s3_bucket.gdd_raw_data`
 - **Purpose:** An S3 bucket is used for storing raw weather data fetched by the Airflow DAGs. This data is then processed and used by the application.
@@ -25,7 +25,7 @@ The project leverages several AWS services to host and manage the application. T
   - The bucket is named `gdd-raw-weather-data` (defined in [`aws_s3_bucket.gdd_raw_data`](../terraform/main.tf)).
   - Public access to the bucket is blocked via [`aws_s3_bucket_public_access_block.gdd_raw_data_block`](../terraform/main.tf) to ensure data privacy.
 
-### 3. Amazon VPC (Virtual Private Cloud)
+## Amazon VPC (Virtual Private Cloud)
 
 - **Resource:** `aws_vpc.gdd_vpc`
 - **Purpose:** A VPC is created to provide an isolated network environment for the AWS resources.
@@ -33,14 +33,14 @@ The project leverages several AWS services to host and manage the application. T
   - The VPC has a CIDR block of `10.0.0.0/16`.
   - DNS support and hostnames are enabled.
 
-### 4. AWS Networking Components
+## AWS Networking Components
 
 - **Subnet (`aws_subnet.gdd_public_subnet`):** A public subnet is created within the VPC to allow the EC2 instance to be accessible from the internet. It's configured to map public IPs on launch.
 - **Internet Gateway (`aws_internet_gateway.gdd_igw`):** An Internet Gateway is attached to the VPC to enable communication between resources in the VPC and the internet.
 - **Route Table (`aws_route_table.gdd_route_table`):** A route table is configured to direct outbound traffic from the public subnet (`0.0.0.0/0`) to the Internet Gateway.
 - **Route Table Association (`aws_route_table_association.gdd_rta`):** Associates the public subnet with the main route table.
 
-### 5. AWS Security Group
+## AWS Security Group
 
 - **Resource:** `aws_security_group.gdd_sg`
 - **Purpose:** A security group acts as a virtual firewall for the EC2 instance, controlling inbound and outbound traffic.
@@ -50,7 +50,7 @@ The project leverages several AWS services to host and manage the application. T
     - Port 22 (SSH) from specified IP addresses (defined by the `ssh_allowed_ips` variable in your Terraform configuration).
   - **Egress Rules:** Allows all outbound traffic.
 
-### 6. Security Considerations
+## Security Considerations
 
 
 - **Logging and Monitoring:**
