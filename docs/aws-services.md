@@ -66,7 +66,7 @@ The project leverages several AWS services to host and manage the application. T
 - **IAM Policies:**
   - IAM policies for the Terraform user/role, which grants permissions to provision resources, are managed separately and adhere to the principle of least privilege.
   - The IAM instance profile (`var.iam_instance_profile_name`) attached to the EC2 instance is also defined and managed outside of this specific Terraform configuration for infrastructure, granting the EC2 instance necessary permissions (e.g., to access S3).
+  - **Terraform Scope:** The Terraform configuration focuses on provisioning the core infrastructure (VPC, EC2, S3, etc.) and does not manage IAM users, roles, or policies directly, separating infrastructure concerns from identity and access management.
 - **SSH Key Management:** The SSH key pair used for accessing the EC2 instance is managed separately, ensuring secure access to the instance without hardcoding sensitive information in the Terraform configuration.
-- **Terraform Scope:** The Terraform configuration focuses on provisioning the core infrastructure (VPC, EC2, S3, etc.) and does not manage IAM users, roles, or policies directly, separating infrastructure concerns from identity and access management.
 
 As detailed in [docs/system-architecture.md](../docs/system-architecture.md), NGINX, running on the EC2 instance, manages external access to the different application services.
