@@ -27,7 +27,6 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Create a non-root user and group
-# Debian/slim uses groupadd and useradd
 RUN groupadd -r appuser && useradd --no-log-init -r -g appuser -d /app appuser
 RUN mkdir -p /app && chown -R appuser:appuser /app
 

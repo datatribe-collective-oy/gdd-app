@@ -25,8 +25,6 @@ FROM python:3.12-slim
 
 
 # Create a non-root user and group
-# Alpine uses addgroup and adduser with different flags
-# Debian/slim uses groupadd and useradd
 RUN groupadd -r appuser && useradd --no-log-init -r -g appuser -d /app appuser
 RUN mkdir -p /app && chown -R appuser:appuser /app
 
