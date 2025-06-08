@@ -1,23 +1,33 @@
 FROM apache/airflow:2.8.2-python3.11
 
-USER root 
-RUN apt-get update && apt-get install -y make && rm -rf /var/lib/apt/lists/*
+
+USER root
+RUN apt-get update && \
+    apt-get install -y make && \
+    rm -rf /var/lib/apt/lists/*
 
 USER airflow
 
+# Install Poetry as the airflow user
+RUN pip install poetry
+
 ENV AIRFLOW_HOME=/opt/airflow
 WORKDIR ${AIRFLOW_HOME}
+# Add Poetry to PATH
+ENV PATH="${AIRFLOW_HOME}/.local/bin:${PATH}"
+
+# Configure Poetry
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_CREATE=false
 
 # Copy files required for building and installing project packages.
-COPY pyproject.toml ./ 
+COPY poetry.lock pyproject.toml ./
 COPY universal ./universal/
-COPY scripts ./scripts/
 COPY data_fetcher ./data_fetcher/
 COPY gdd_counter ./gdd_counter/
-COPY README.md ./README.md
 
 # Install the project packages and their dependencies defined in pyproject.toml.
-RUN pip install --no-cache-dir .
+RUN poetry install --only main --no-root
 
 # Copy Airflow-specific runtime files
 COPY init-airflow.sh ./init-airflow.sh

@@ -1,18 +1,40 @@
+# ---- Builder Stage ----
+FROM python:3.11-slim AS builder
+
+# Install Poetry
+RUN pip install poetry
+
+# Configure Poetry
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_CREATE=false
+WORKDIR /app_builder
+
+# Copy files for poetry install - including all local packages defined in pyproject.toml
+COPY poetry.lock pyproject.toml ./
+COPY universal ./universal/
+COPY scripts ./scripts/
+
+
+RUN poetry install --only main --no-root
+
+# ---- Final Stage ----
 FROM python:3.11-slim
 
+# Configure Poetry
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_CREATE=false
 
 WORKDIR /app
 
-COPY pyproject.toml ./
-COPY README.md ./
-COPY universal ./universal/
-COPY scripts ./scripts/
-COPY data_fetcher ./data_fetcher/ 
-COPY gdd_counter ./gdd_counter/   
+# Copy Poetry executable
+COPY --from=builder /usr/local/bin/poetry /usr/local/bin/poetry
 
-RUN pip install --no-cache-dir .
+# Copy installed Python packages
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
+
+# Copy the scripts directory for Streamlit to run the app
+COPY --from=builder /app_builder/scripts /app/scripts/
 
 # Expose default port for Streamlit.
 EXPOSE 8501
-
-CMD ["streamlit", "run", "scripts/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]
+CMD ["poetry", "run", "streamlit", "run", "scripts/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]

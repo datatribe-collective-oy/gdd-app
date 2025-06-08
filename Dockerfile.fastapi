@@ -1,25 +1,42 @@
+# ---- Builder Stage ----
 # Base image
-FROM python:3.11-slim
+FROM python:3.11-slim AS builder
 
-# Working directory..
-WORKDIR /app
+# Install Poetry
+RUN pip install poetry
 
-# Copy project necessary source files installation..
-COPY pyproject.toml ./
-COPY README.md ./
+# Configure Poetry
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_CREATE=false
+WORKDIR /app_builder
+
+# Copy files for poetry install - including all local packages defined in pyproject.toml
+COPY poetry.lock pyproject.toml ./
 COPY universal ./universal/
-COPY scripts ./scripts/
-COPY data_fetcher ./data_fetcher/
-COPY gdd_counter ./gdd_counter/
+
 
 # Install the package and its dependencies.
-RUN pip install --no-cache-dir .
+RUN poetry install --only main --no-root
+
+# ---- Final Stage ----
+FROM python:3.11-slim
+
+# Configure Poetry (good for consistency if poetry commands are run)
+ENV POETRY_NO_INTERACTION=1 \
+    POETRY_VIRTUALENVS_CREATE=false
+
+WORKDIR /app
+
+# Copy Poetry executable from the builder stage
+COPY --from=builder /usr/local/bin/poetry /usr/local/bin/poetry
+
+# Copy installed Python packages from the builder stage
+COPY --from=builder /usr/local/lib/python3.11/site-packages /usr/local/lib/python3.11/site-packages
 
 # Copy the API.
 COPY api_service/ /app/api_service/
 
 # Expose FastAPI default port for uvicorn.
 EXPOSE 8000
-
 # Run FastAPI API with uvicorn.
-CMD ["uvicorn", "api_service.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["poetry", "run", "uvicorn", "api_service.main:app", "--host", "0.0.0.0", "--port", "8000"]
