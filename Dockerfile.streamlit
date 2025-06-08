@@ -1,27 +1,46 @@
-FROM python:3.11-slim
+# ---- Builder Stage ----
+FROM python:3.12-slim AS builder
 
+ENV POETRY_VERSION=2.1.2
+ENV POETRY_HOME="/opt/poetry"
+ENV POETRY_VIRTUALENVS_CREATE=false
+ENV PATH="$POETRY_HOME/bin:$PATH"
+
+USER root 
+RUN apt-get update && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry
+RUN pip install --no-cache-dir poetry==${POETRY_VERSION}
 
 WORKDIR /app
 
-COPY pyproject.toml ./
-COPY README.md ./
+# Copy project files for installation
+COPY pyproject.toml poetry.lock* ./
+
+# Install only the dependencies needed for Streamlit
+RUN python -m poetry install --no-interaction --only main --no-root && \
+    rm -rf $(python -m poetry config cache-dir)
+
+# ---- Final Stage ----
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Create a non-root user and group
+RUN groupadd -r appuser && useradd --no-log-init -r -g appuser -d /app appuser
+RUN mkdir -p /app && chown -R appuser:appuser /app
+
+# Copy installed packages from builder stage
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/bin/ /usr/local/bin/
+
+# Copy only the application code needed for Streamlit
 COPY universal ./universal/
 COPY scripts ./scripts/
-COPY data_fetcher ./data_fetcher/ 
-COPY gdd_counter ./gdd_counter/   
-
-RUN pip install --no-cache-dir .
-
-# Create a non-privileged user and group
-RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
-
-# Ensure the app directory is owned by the new user
 RUN chown -R appuser:appuser /app
 
-# Expose default port for Streamlit.
-EXPOSE 8501
-
-# Switch to the non-privileged user
 USER appuser
 
+# Expose default port for Streamlit
+EXPOSE 8501
 CMD ["streamlit", "run", "scripts/streamlit_app.py", "--server.port=8501", "--server.address=0.0.0.0"]

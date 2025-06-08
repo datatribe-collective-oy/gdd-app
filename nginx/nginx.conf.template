@@ -21,7 +21,7 @@ server {
         # Cache control
         add_header Cache-Control 'no-cache, no-store, must-revalidate, proxy-revalidate';
         add_header Pragma 'no-cache'; # HTTP/1.0 backward compatibility
-        add_header Expires '0'; # Proxies
+        add_header Expires '0'; #Proxies
     }
 
     location /api/ {

@@ -8,7 +8,7 @@ echo "Starting EC2 bootstrap"
 
 # Install base packages.
 dnf update -y
-dnf install -y docker openssl git aws-cli
+dnf install -y docker git aws-cli
 
 systemctl enable docker
 systemctl start docker
