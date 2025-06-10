@@ -4,7 +4,7 @@ This repository introduces a GDD (Growing Degree Days) prototype application, wh
 
 The README focuses on setting up and running the application using Docker Compose for development purposes.
 
-Detailed documentation of the application's components will be updated on /docs folder.
+Detailed documentation of the application's components will be updated on [Wiki](https://github.com/datatribe-collective-oy/gdd-app/wiki).
 
 ### Prerequisites
 
@@ -75,7 +75,7 @@ Once the services are up and running:
 ### Running Airflow DAGs
 
 1.  Access the Airflow UI at `http://localhost:8080`.
-2.  (Optional) Unpause the `bronze_data_fetcher_dag` (and any other DAGs) in the UI.
+2.  (Optional) Unpause DAGs in the UI.
 3.  You can trigger the DAG manually via the UI for testing, or wait for the scheduled run.
 
 ### Stopping the Application
