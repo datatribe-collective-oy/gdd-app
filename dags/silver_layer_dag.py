@@ -14,8 +14,7 @@ def run_gdd_counter_module(**kwargs):
     project_root = os.getenv(
         "AIRFLOW_HOME", "/opt/airflow"
     )  
-    # Command to execute: poetry run python -m gdd_counter.processor
-    # Ensure your gdd_counter.processor module is set up to be run this way.
+    # Command to execute: poetry run python -m gdd_counter.processor.
     poetry_command = ["poetry", "run", "python", "-m", "gdd_counter.processor"]
 
     print(f"Executing command: {' '.join(poetry_command)} in {project_root}")
@@ -31,7 +30,7 @@ def run_gdd_counter_module(**kwargs):
     )
     print("GDD counter module completed successfully.")
     print("STDOUT:", process.stdout)
-    if process.stderr: # Still good to log stderr if present, even on success
+    if process.stderr: # Still good to log stderr if present, even on success.
         print("STDERR:", process.stderr)
 
 

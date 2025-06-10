@@ -16,7 +16,6 @@ def run_data_fetcher_module(**kwargs):
     )
 
     # Command to execute: poetry run python -m data_fetcher.main --date YYYY-MM-DD
-    # Ensure your data_fetcher.main module accepts a --date argument.
     poetry_command = [
         "poetry", "run", "python", "-m", "data_fetcher.main", "--date", execution_date_str
     ]

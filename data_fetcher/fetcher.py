@@ -70,10 +70,7 @@ def fetch_weather_data(lat, lon, location_id):
         # Pandas will correctly interpret ISO 8601 with timezone offsets.
         df["timestamp"] = pd.to_datetime(df["timestamp"])
 
-        # Ensure all timestamps are converted to UTC.
-        # If df["timestamp"].dt.tz is None, it means some timestamps might be naive.
-        # However, yr.no should provide timezone-aware ISO strings.
-        # tz_convert('UTC') will convert any timezone-aware datetime to UTC.
+        # Convert the timestamp to UTC.
         df["timestamp"] = df["timestamp"].dt.tz_convert("UTC")
 
     return df

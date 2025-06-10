@@ -36,7 +36,7 @@ except ImportError:
         "Please ensure 'gdd-app' is in PYTHONPATH and 'universal/config.py' and 'universal/s3_utils.py' exist."
     )
 
-import pandas as pd  # For DataFrame manipulation.
+import pandas as pd 
 import argparse  # For command-line arguments.
 import logging  # For logging application events.
 
@@ -149,7 +149,7 @@ def run_data_fetcher(target_date_str: str | None = None):
                         f"    Fetching weather data for {location_id} for {current_day_str}..."
                     )
                     # Note: The API typically gives a forecast, so fetching for "yesterday" will still give current forecast.
-                    # The key is that we are *saving* it under yesterday's date partition.
+                    # The key is that it is being *saved* it under yesterday's date partition.
                     df_newly_fetched = fetch_weather_data(lat, lon, location_id)
                     df_newly_fetched["crop_id"] = (
                         crop_id  # Add crop_id early for context.
@@ -163,7 +163,7 @@ def run_data_fetcher(target_date_str: str | None = None):
 
                     # Timestamps in df_newly_fetched are already datetime objects and UTC-aware from fetcher.py.
                     # CRUCIAL: Filter newly fetched data to ONLY include records for the target processing date (process_dt)
-                    # This ensures we only consider data relevant to the file we are trying to build/update.
+                    # This ensures we only consider data relevant to the file are trying to be built/updated.
                     df_newly_fetched = df_newly_fetched[
                         df_newly_fetched["timestamp"].dt.date == process_dt.date()
                     ]
@@ -201,18 +201,18 @@ def run_data_fetcher(target_date_str: str | None = None):
                         logging.info(
                             f"    No existing data found for {current_day_str}. Using newly fetched data."
                         )
-                        # Ensure newly fetched data (already filtered for process_dt) is sorted by timestamp.
+                        # Newly fetched data (already filtered for process_dt) is sorted by timestamp.
                         df_processed = df_newly_fetched.sort_values(by="timestamp")
 
-                    # At this point, df_processed should ONLY contain unique hourly data for process_dt.
+                    # df_processed should ONLY contain unique hourly data for process_dt.
                     if not df_processed.empty:
                         logging.info(
                             f"    Validating final weather data for {location_id} for {current_day_str}..."
                         )
                         # Convert process_dt (a datetime.datetime object) to a UTC-aware pandas Timestamp for the validator.
-                        # First, create a pandas Timestamp from the datetime.datetime object.
+                        # Create a pandas Timestamp from the datetime.datetime object.
                         temp_timestamp = pd.Timestamp(process_dt)
-                        # Then, ensure it is UTC. If naive, localize to UTC. If already timezone-aware, convert to UTC.
+                        # Ensure it is UTC. If naive, localize to UTC. If already timezone-aware, convert to UTC.
                         if temp_timestamp.tzinfo is None:
                             target_pd_timestamp = temp_timestamp.tz_localize("UTC")
                         else:
