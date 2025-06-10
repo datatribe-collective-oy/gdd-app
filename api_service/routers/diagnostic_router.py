@@ -3,6 +3,12 @@ from fastapi import APIRouter, HTTPException
 router = APIRouter()
 
 
+# Root endpoint
+@router.get("/")
+def read_root():
+    return {"message": "Data API Root OK."}
+
+
 # 401 Unauthorized
 @router.get("/unauthorized/")
 @router.get("/gdd/unauthorized/")

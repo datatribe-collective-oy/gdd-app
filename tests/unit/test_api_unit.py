@@ -1,7 +1,7 @@
 from tests.utils.http_variations import assert_response_for_case
 from fastapi.testclient import TestClient
-from scripts.api import app
 import pytest
+from api_service.main import app  # Main FastAPI application
 
 client = TestClient(app)
 
@@ -9,29 +9,31 @@ client = TestClient(app)
 @pytest.mark.parametrize(
     "path, case",
     [
-        ("/api/", "ok"),
-        ("/api/gdd/", "ok"),
-        ("/api/weather/", "ok"),
-        ("/api/unknown/", "not_found"),
-        ("/api/gdd/unknown/", "not_found"),
-        ("/api/weather/unknown/", "not_found"),
-        ("/api/unauthorized/", "unauthorized"),
-        ("/api/gdd/unauthorized/", "unauthorized"),
-        ("/api/weather/unauthorized/", "unauthorized"),
-        ("/api/forbidden/", "forbidden"),
-        ("/api/gdd/forbidden/", "forbidden"),
-        ("/api/weather/forbidden/", "forbidden"),
-        ("/api/bad_request/", "bad_request"),
-        ("/api/gdd/bad_request/", "bad_request"),
-        ("/api/weather/bad_request/", "bad_request"),
-        ("/api/unprocessable/", "unprocessable"),
-        ("/api/gdd/unprocessable/", "unprocessable"),
-        ("/api/weather/unprocessable/", "unprocessable"),
-        ("/api/server_error/", "server_error"),
-        ("/api/gdd/server_error/", "server_error"),
-        ("/api/weather/server_error/", "server_error"),
+        ("/", "ok"),
+        ("/unknown/", "not_found"),
+        ("/gdd/unknown/", "not_found"),
+        ("/weather/unknown/", "not_found"),
+        ("/unauthorized/", "unauthorized"),
+        ("/gdd/unauthorized/", "unauthorized"),
+        ("/weather/unauthorized/", "unauthorized"),
+        ("/forbidden/", "forbidden"),
+        ("/gdd/forbidden/", "forbidden"),
+        ("/weather/forbidden/", "forbidden"),
+        ("/bad_request/", "bad_request"),
+        ("/gdd/bad_request/", "bad_request"),
+        ("/weather/bad_request/", "bad_request"),
+        ("/unprocessable/", "unprocessable"),
+        ("/gdd/unprocessable/", "unprocessable"),
+        ("/weather/unprocessable/", "unprocessable"),
+        ("/server_error/", "server_error"),
+        ("/gdd/server_error/", "server_error"),
+        ("/weather/server_error/", "server_error"),
     ],
 )
 def test_various_endpoints(path, case):
+    """
+    Tests various simple GET endpoints to ensure they return expected HTTP status codes.
+    This test is parameterized to cover different paths and their corresponding status cases.
+    """
     response = client.get(path)
     assert_response_for_case(response, case)

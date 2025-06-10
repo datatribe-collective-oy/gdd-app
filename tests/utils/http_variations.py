@@ -11,6 +11,21 @@ from tests.utils.http_status import (
 
 
 def assert_response_for_case(response, case, expected_body=None):
+    """
+    Asserts the HTTP response status based on a predefined case string.
+    Optionally, it can also assert the response body.
+
+    Args:
+        response: The HTTP response object (typically from FastAPI's TestClient).
+        case (str): A string representing the expected outcome. Supported cases are:
+                    "ok", "created", "bad_request", "unauthorized",
+                    "not_found", "forbidden", "unprocessable", "server_error".
+        expected_body (Optional[Any]): The expected JSON body of the response.
+                                       If None, the body is not checked.
+
+    Raises:
+        ValueError: If an unknown case string is provided.
+    """
     match case:
         case "ok":
             assert_status_ok(response)
@@ -31,7 +46,7 @@ def assert_response_for_case(response, case, expected_body=None):
         case _:
             raise ValueError(f"Oops, sorry! Unknown case: {case}")
 
-    # Checking expected JSON body if it's given
+    # Checking expected JSON body if it's given.
     if expected_body is not None:
         assert (
             response.json() == expected_body

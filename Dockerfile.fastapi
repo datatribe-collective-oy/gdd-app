@@ -1,20 +1,46 @@
-# Base image
-FROM python:3.13-slim
+# ---- Builder Stage ----
+FROM python:3.12-slim AS builder
 
-# Working directory
+ENV POETRY_VERSION=2.1.2
+ENV POETRY_HOME="/opt/poetry"
+ENV POETRY_VIRTUALENVS_CREATE=false
+ENV PATH="$POETRY_HOME/bin:$PATH"
+
+USER root 
+RUN apt-get update && rm -rf /var/lib/apt/lists/*
+
+# Install Poetry
+RUN pip install --no-cache-dir poetry==${POETRY_VERSION}
+
 WORKDIR /app
 
-# Copy requirements (Note to self: update requirements)
-COPY requirements.txt .
+# Copy project files for installation
+COPY pyproject.toml poetry.lock* ./
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+# Install only the dependencies needed for the API
+RUN python -m poetry install --no-interaction --only main --no-root && \
+    rm -rf $(python -m poetry config cache-dir)
+# ---- Final Stage ----
+FROM python:3.12-slim
 
-# Copy the API
-COPY scripts/api.py .
 
-# Expose port (FastAPI default for uvicorn)
+# Create a non-root user and group
+RUN groupadd -r appuser && useradd --no-log-init -r -g appuser -d /app appuser
+RUN mkdir -p /app && chown -R appuser:appuser /app
+
+# Copy installed packages from builder stage
+COPY --from=builder /usr/local/lib/python3.12/site-packages /usr/local/lib/python3.12/site-packages
+COPY --from=builder /usr/local/bin/ /usr/local/bin/ 
+
+# Copy only the packages needed for FastAPI
+COPY universal ./universal/
+COPY api_service ./api_service/
+RUN chown -R appuser:appuser /app
+
+USER appuser
+
+# Expose FastAPI default port for uvicorn
 EXPOSE 8000
 
 # Run FastAPI API with uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "api_service.main:app", "--host", "0.0.0.0", "--port", "8000"]

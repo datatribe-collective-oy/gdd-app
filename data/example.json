@@ -1,0 +1,90 @@
+[
+  {
+    "notes": {
+    "comment_1": "http://localhost:8000/weather/?location_id=Belagavi&crop_id=maize&date=2025-05-26",
+    "comment_2": "Example data."
+  }
+  },
+  {
+    "timestamp": "2025-05-26T13:00:00+00:00",
+    "air_temperature": 21.6,
+    "location_id": "Belagavi",
+    "crop_id": "maize"
+  },
+  {
+    "timestamp": "2025-05-26T14:00:00+00:00",
+    "air_temperature": 21.2,
+    "location_id": "Belagavi",
+    "crop_id": "maize"
+  },
+  {
+    "timestamp": "2025-05-26T15:00:00+00:00",
+    "air_temperature": 20.9,
+    "location_id": "Belagavi",
+    "crop_id": "maize"
+  },
+  {
+    "timestamp": "2025-05-26T16:00:00+00:00",
+    "air_temperature": 21.1,
+    "location_id": "Belagavi",
+    "crop_id": "maize"
+  },
+  {
+    "timestamp": "2025-05-26T17:00:00+00:00",
+    "air_temperature": 20.9,
+    "location_id": "Belagavi",
+    "crop_id": "maize"
+  },
+  {
+    "timestamp": "2025-05-26T18:00:00+00:00",
+    "air_temperature": 20.7,
+    "location_id": "Belagavi",
+    "crop_id": "maize"
+  },
+  {
+    "timestamp": "2025-05-26T19:00:00+00:00",
+    "air_temperature": 20.4,
+    "location_id": "Belagavi",
+    "crop_id": "maize"
+  },
+  {
+    "timestamp": "2025-05-26T20:00:00+00:00",
+    "air_temperature": 20.3,
+    "location_id": "Belagavi",
+    "crop_id": "maize"
+  },
+  {
+    "timestamp": "2025-05-26T21:00:00+00:00",
+    "air_temperature": 20.6,
+    "location_id": "Belagavi",
+    "crop_id": "maize"
+  },
+  {
+    "timestamp": "2025-05-26T22:00:00+00:00",
+    "air_temperature": 20.6,
+    "location_id": "Belagavi",
+    "crop_id": "maize"
+  },
+  {
+    "timestamp": "2025-05-26T23:00:00+00:00",
+    "air_temperature": 20.6,
+    "location_id": "Belagavi",
+    "crop_id": "maize"
+  },
+  {
+    "notes": {
+    "comment_1": "http://localhost:8000/gdd/?location_id=Belagavi&crop_id=maize&date=2025-05-26&exact_match=true",
+    "comment_2": "Example data, excat match of GDD calculation."
+  }
+  },
+  {
+    "date": "2025-05-26T00:00:00",
+    "crop_id": "maize",
+    "location_id": "Belagavi",
+    "t_min_daily": 20.3,
+    "t_max_daily": 21.6,
+    "t_avg_daily": 20.95,
+    "t_base_used": 10,
+    "daily_gdd": 10.95
+  }
+]
